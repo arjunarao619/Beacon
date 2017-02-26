@@ -136,7 +136,8 @@ public class UserLocation2 extends AppCompatActivity  {
 
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
 
-
+        Intent serviceIntent = new Intent(UserLocation2.this,ShakeService.class);
+        startService(serviceIntent);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -145,11 +146,7 @@ public class UserLocation2 extends AppCompatActivity  {
 
             @Override
             public void onShake(int count) {
-				/*
-				 * The following method, "handleShakeEvent(count):" is a stub //
-				 * method you would use to setup whatever you want done once the
-				 * device has been shook.
-				 */
+
                 Toast.makeText(UserLocation2.this,"Shake Shake",Toast.LENGTH_LONG).show();
             }
         });
@@ -637,7 +634,7 @@ public class UserLocation2 extends AppCompatActivity  {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+
 
 
 
@@ -646,8 +643,7 @@ public class UserLocation2 extends AppCompatActivity  {
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
-        mSensorManager.unregisterListener(mShakeDetector);
+
     }
 
     @Override
