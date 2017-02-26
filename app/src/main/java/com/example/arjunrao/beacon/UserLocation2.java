@@ -30,6 +30,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -877,6 +878,26 @@ public class UserLocation2 extends AppCompatActivity {
         }
         return haveConnectedWifi || haveConnectedMobile;
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_POWER) {
+            // Do something here...
+            event.startTracking(); // Needed to track long presses
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_POWER) {
+           Toast.makeText(UserLocation2.this,"Long Presses",Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
 
 
 
