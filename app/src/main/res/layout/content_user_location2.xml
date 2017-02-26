@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".UserLocation2">
+
+
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/location_toggle_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+
+        app:fabSize="normal"
+        android:layout_marginBottom="160dp"
+        android:layout_marginEnd="16dp"
+        app:srcCompat="@drawable/ic_my_location_24dp"
+        tools:ignore="VectorDrawableCompat"
+        app:backgroundTint="#004D40"/>
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        mapbox:style_url="@string/dark"
+        mapbox:zoom = "13"
+        android:layout_marginBottom="60dp">
+
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="60dp">
+       <Button
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:background="#F44336"
+           android:alpha = "0.9"
+           android:id = "@+id/panicButton"
+           android:text = "PANIC"
+           android:textColor="#e0e0e0"
+           android:textSize="25sp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F44336"
+            android:alpha = "0.9"
+            android:id = "@+id/panicStop"
+            android:text = "STOP ALARM"
+            android:textColor="#e0e0e0"
+            android:textSize="25sp"/>
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+    <RelativeLayout
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center"
+        >
+
+        <ImageButton
+            android:layout_width="130dp"
+            android:layout_height="80dp"
+            android:background="#004D40"
+
+            android:layout_gravity="bottom|center"
+            android:src = "@drawable/send_location"
+            android:id="@+id/send_location"
+            android:layout_alignParentTop="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "Send Location"
+            android:paddingTop="3dp"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="2dp"/>
+
+
+
+
+
+
+    </RelativeLayout>
+
+
+
+
+    <RelativeLayout
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+
+        android:layout_gravity="bottom|start"
+        android:paddingTop="0dp"
+        >
+
+        <ImageButton
+            android:layout_width="130dp"
+            android:layout_height="80dp"
+            android:background="#004D40"
+
+            android:layout_gravity="bottom|center"
+            android:src = "@drawable/hospital"
+            android:id="@+id/hospitals" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "Hospitals"
+            android:paddingTop="2dp"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="1dp"/>
+
+
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="130dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        >
+
+        <ImageButton
+            android:layout_width="130dp"
+            android:layout_height="80dp"
+            android:background="#004D40"
+            android:contentDescription="Police"
+
+            android:layout_gravity="bottom|center"
+            android:src = "@drawable/police"
+            android:id="@+id/police" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "Police"
+            android:paddingTop="2dp"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="1dp"/>
+
+
+
+    </RelativeLayout>
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

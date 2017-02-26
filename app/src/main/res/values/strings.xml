@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Location Broadcaster</string>
+    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="title_activity_main_dash_board">MainDashBoard</string>
+    <string name="title_activity_trusted">TrustedActivity</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_map">Map</string>
+    <string name="access_token">sk.eyJ1IjoiYXJqdW5yYW8iLCJhIjoiY2l5OTFxbWxjMDAzYzJ3cWs3cG9kemQ0eiJ9.vOsXkcwNljdxBRct1pMuKQ</string>
+    <string name="dark">mapbox://styles/arjunrao/ciy8hfhey002h2roc65qcr2cr</string>
+    <string name="title_activity_user_location2">UserLocation2</string>
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Close Drawer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="titles">
+        <item>Contacts</item>
+        <item>Email and SMS</item>
+        <item>Notifications</item>
+        <item>Shortcuts</item>
+        <item>Location</item>
+        <item>About Developer</item>
+    </string-array>
+    <string name="title_activity_email">EmailActivity</string>
+    <string name="title_activity_notifications">Notifications</string>
+    <string name="title_activity_shortcut_keys">ShortcutKeys</string>
+    <string name="title_activity_navigation_drawer_test">NavigationDrawerTest</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_help_line">HelpLineActivity</string>
+    <string name="facebook_app_id">302134076856279</string>
+    <string name="fb_login_protocol_scheme">302134076856279</string>
+
+</resources>

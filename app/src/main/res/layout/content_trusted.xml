@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id = "@+id/content_trusted"
+    android:background="#ffffff">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:text = "YOU HAVE NO TRUSTED CONTACTS"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:id="@+id/nocontacts"
+        android:fontFamily="sans-serif"
+         />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/create_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:paddingBottom="48dp"
+        android:src="@drawable/add_contact1"
+        app:backgroundTint="#004D40"
+        />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/delete_contact"
+        android:visibility="invisible"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:paddingBottom="48dp"
+        android:src="@drawable/delete_contact1"
+        app:backgroundTint="#004D40"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id = "@+id/contact_list"
+        android:layout_width = "match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

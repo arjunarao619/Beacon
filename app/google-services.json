@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "869625431897",
+    "project_id": "beacon-c74b8"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869625431897:android:52c622da86814492",
+        "android_client_info": {
+          "package_name": "com.example.arjunrao.beacon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "869625431897-inqfmh2s14f5f6ot4emjvab4t1lpj2gn.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "869625431897-5plvhngpsqfoi8s33rgltglhmnpcp3k1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.arjunrao.beacon",
+            "certificate_hash": "7663f7deee1cc0ea2ac74fec93ec506cf8092735"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBm2BJmbhxsFF_koeBRM1yh-yoU2QNBabs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
