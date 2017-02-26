@@ -59,6 +59,7 @@
             android:layout_height="match_parent"
             android:background="#F44336"
             android:alpha = "0.9"
+            android:visibility="invisible"
             android:id = "@+id/panicStop"
             android:text = "STOP ALARM"
             android:textColor="#e0e0e0"
