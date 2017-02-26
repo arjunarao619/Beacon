@@ -8,6 +8,11 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -55,9 +60,11 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import java.util.List;
 import java.util.Locale;
 
-;
 
-public class UserLocation2 extends AppCompatActivity {
+
+public class UserLocation2 extends AppCompatActivity  {
+
+
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -89,7 +96,7 @@ public class UserLocation2 extends AppCompatActivity {
     private LocationServices locationServices;
     double latitude,longitude;
     private Cursor cursor,contactCursor;
-
+    private SensorManager sensorManager;
     String address,city,state,country,postalCode,knownName;
     private SQLiteDatabase db,contactDb;
     int PLACE_PICKER_REQUEST = 1;
@@ -104,6 +111,11 @@ public class UserLocation2 extends AppCompatActivity {
     private boolean SMS_SUCCESS = false;
     private boolean EMAIL_SUCCESS = false;
      MediaPlayer mediaPlayer;
+
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,8 +133,26 @@ public class UserLocation2 extends AppCompatActivity {
         }
 
 
-        // This contains the MapView in XML and needs to be called after the account manager
-        setContentView(R.layout.activity_user_location2);
+
+        setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager
+                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+
+            @Override
+            public void onShake(int count) {
+				/*
+				 * The following method, "handleShakeEvent(count):" is a stub //
+				 * method you would use to setup whatever you want done once the
+				 * device has been shook.
+				 */
+                Toast.makeText(UserLocation2.this,"Shake Shake",Toast.LENGTH_LONG).show();
+            }
+        });
 
          mediaPlayer = MediaPlayer.create(UserLocation2.this,R.raw.panic);
         myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -607,12 +637,17 @@ public class UserLocation2 extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+
+
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        mSensorManager.unregisterListener(mShakeDetector);
     }
 
     @Override
@@ -879,24 +914,10 @@ public class UserLocation2 extends AppCompatActivity {
         return haveConnectedWifi || haveConnectedMobile;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_POWER) {
-            // Do something here...
-            event.startTracking(); // Needed to track long presses
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
-    @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_POWER) {
-           Toast.makeText(UserLocation2.this,"Long Presses",Toast.LENGTH_LONG).show();
-            return true;
-        }
-        return super.onKeyLongPress(keyCode, event);
-    }
+
+
+
 
 
 
