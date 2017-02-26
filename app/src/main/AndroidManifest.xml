@@ -21,8 +21,6 @@
         android:theme="@style/AppTheme.NoActionBar"
         >
 
-        <service android:name=".ShakeService"/>
-
 
         <activity android:name=".WelcomeActivity"
             android:screenOrientation="portrait"

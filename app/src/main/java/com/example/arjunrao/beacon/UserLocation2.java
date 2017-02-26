@@ -136,7 +136,7 @@ public class UserLocation2 extends AppCompatActivity  {
 
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
 
-        Intent serviceIntent = new Intent(UserLocation2.this,ShakeService.class);
+        Intent serviceIntent = new Intent(UserLocation2.this,ShakeService1.class);
         startService(serviceIntent);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
