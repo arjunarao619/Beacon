@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         >
-
+        <service android:name=".ShakeService1"/>
 
         <activity android:name=".WelcomeActivity"
             android:screenOrientation="portrait"
