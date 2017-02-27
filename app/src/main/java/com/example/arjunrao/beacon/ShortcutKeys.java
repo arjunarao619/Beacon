@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,10 +17,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.ToggleButton;
 
 public class ShortcutKeys extends AppCompatActivity {
-
+boolean DISABLE_SHAKE = true;
+    SQLiteDatabase db;
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         @Override
@@ -48,6 +54,36 @@ public class ShortcutKeys extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shortcut_keys);
+
+        Beacon_Database optionsHelper = new Beacon_Database(ShortcutKeys.this);
+        db = optionsHelper.getReadableDatabase();
+
+
+
+        final FrameLayout optionsFrame = (FrameLayout) findViewById(R.id.optionsFrame);
+        optionsFrame.setVisibility(View.GONE);
+
+       final RadioButton radioDiscrete = (RadioButton) findViewById(R.id.is_discrete);
+       final  RadioButton radioLoud = (RadioButton) findViewById(R.id.is_loud);
+
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.disable_shake);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    DISABLE_SHAKE = true;
+                    optionsFrame.setVisibility(View.VISIBLE);
+
+                    radioDiscrete.setChecked(true);
+                } else {
+                   DISABLE_SHAKE = false;
+                    optionsFrame.setVisibility(View.GONE);
+
+                    radioDiscrete.setChecked(false);
+                    radioLoud.setChecked(false);
+
+                }
+            }
+        });
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -95,15 +131,30 @@ public class ShortcutKeys extends AppCompatActivity {
 
         drawerLayout.addDrawerListener(drawerToggle);
 
-        AlertDialog.Builder alertdialog = new AlertDialog.Builder(ShortcutKeys.this);
-        alertdialog.setTitle("Shorcut Key");
-        alertdialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        alertdialog.show();
+
+
+
+
+
+    }
+
+    public void onNotif(View view){
+
+
+        boolean checked = ((RadioButton)view).isChecked();
+
+        switch(view.getId()){
+            case R.id.is_discrete:
+                if(checked){
+
+                }
+
+            case R.id.is_loud:
+                if(checked){
+
+                }
+
+        }
     }
 
 
@@ -214,4 +265,6 @@ public class ShortcutKeys extends AppCompatActivity {
         }
         return true;
     }
+
+    //TODO BEACON DATABASE WITH OPTIONS, VALIDATE IN ON RESTART, ON PAUSE AND ON DESTROY METHOD
 }
