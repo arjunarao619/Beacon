@@ -1,15 +1,27 @@
 package com.example.arjunrao.beacon;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
+
+import static com.example.arjunrao.beacon.EmailActivity.SENDTOTHISEMAIL;
 
 
 /**
@@ -21,6 +33,14 @@ public class ShakeService1 extends Service {
     private long lastUpdate;
     SensorEventListener listen;
 
+    private boolean EMAIL_SUCCESS = false;
+    MediaPlayer mediaPlayer;
+    private String SENDTOTHISEMAIL;
+    private SQLiteDatabase db, contactDb;
+    String address, city, state, country, postalCode, knownName;
+    private Cursor cursor, contactCursor;
+    private static final int PERMISSIONS_LOCATION = 0;
+    double latitude,longitude;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,11 +84,54 @@ public class ShakeService1 extends Service {
                 return;
             }
             lastUpdate = actualTime;
-            Toast.makeText(this,
-                    "SHAKE SHAKE",
-                    Toast.LENGTH_LONG).show();
+            ///////////////////////////////////////////////////////////
+           // cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
+
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            }
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            longitude = location.getLongitude();
+             latitude = location.getLatitude();
+            Toast.makeText(ShakeService1.this,String.valueOf(latitude) + ", "+String.valueOf(longitude),Toast.LENGTH_LONG).show();
+
+            final LocationListener locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                    Toast.makeText(ShakeService1.this,String.valueOf(latitude) + ", "+String.valueOf(longitude),Toast.LENGTH_LONG).show();
+
+                }
+
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            };
+
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10, locationListener);
+
+
+
+
+
+
+
             Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
             v.vibrate(1000);
+            ///////////////////////////////////////////////////////
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -102,4 +165,6 @@ public class ShakeService1 extends Service {
         }
 
     }
+
+
 }

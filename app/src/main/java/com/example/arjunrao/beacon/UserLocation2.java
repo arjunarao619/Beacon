@@ -107,6 +107,7 @@ public class UserLocation2 extends AppCompatActivity  {
     String[] numbers = new String[10];
     private static final int PERMISSIONS_LOCATION = 0;
     private String SENDTOTHISEMAIL;
+
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
     private boolean SMS_SUCCESS = false;
     private boolean EMAIL_SUCCESS = false;
