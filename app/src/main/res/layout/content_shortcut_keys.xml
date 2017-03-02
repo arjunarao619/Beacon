@@ -1,143 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:layout_width="match_parent"
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:paddingTop="48dp"
+    android:paddingTop="16dp"
     android:paddingBottom="3dp"
-    android:background="#e0e0e0"
-
-
+    android:background="#3A3A45"
     >
-
-
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-       android:layout_centerHorizontal="true"
-      >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:paddingTop="16dp"
-            android:layout_height="wrap_content"
-            android:text="Discrete Audio Record On Phone Shake"
-            android:textAlignment="center"
-            android:textSize="35sp"
-            android:paddingBottom="90dp"/>
-
-        <ToggleButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="#212121"
-
-            android:textColor="#e0e0e0"
-            android:id = "@+id/toggle_record"
-            android:layout_gravity="bottom|center_horizontal"/>
-
-
-
-    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#e0e0e0"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
+        android:background="#868689"
+        android:id="@+id/frameLayout2">
 
-        android:id = "@+id/optionsFrame"
-        android:layout_alignParentTop="true"
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:paddingTop="120dp"
+            
+            android:paddingBottom="30dp"/>
+
+        <TextView
+            android:paddingTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable Emergency Mode"
+            android:textColor="#e0e0e0"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:textSize="40sp"
+            android:paddingStart="8dp"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/frameLayout2"
         android:layout_alignParentStart="true">
 
 
-
-        <TextView
-            android:layout_marginStart="8dp"
+        <CheckBox
+            android:text="CheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:text="Send Discrete
-  Notification"
+            android:id="@+id/follow_me"
 
-            android:textSize="25sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:paddingTop="20dp"
-            android:text=" Send Loud
-Notification"
-
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="10dp"
-            android:textSize="25sp"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/info"
-            android:id = "@+id/info"
-            android:layout_gravity="bottom|center_horizontal"/>
-
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginTop="75dp"
-            android:orientation="horizontal"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:weightSum="1">
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_gravity="start|bottom"
-                android:id = "@+id/is_discrete"
-                android:onClick="onNotif"
-                android:layout_marginStart="60dp"/>
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-android:layout_marginStart="150dp"
-                android:id = "@+id/is_loud"
-                android:onClick="onNotif"
-                android:layout_weight="0.04" />
-
-        </RadioGroup>
-
-
-
-
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:background="#e0e0e0">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Disable Shake Notifications"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:textSize="29sp"/>
-
-        <ToggleButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="#212121"
+            tools:text="Activate Follow Me"
+            android:fontFamily="sans-serif"
+            android:textSize="30sp"
             android:textColor="#e0e0e0"
-            android:id = "@+id/disable_shake"
-            android:layout_marginTop="60dp"
-            android:layout_gravity="bottom|center_horizontal"/>
-    </FrameLayout>
+            android:textAlignment="center"
+            app:buttonTint="#e0e0e0"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"
+            />
+
+        <CheckBox
+            android:text="Record Audio"
+            android:layout_width=
+                "wrap_content"
+
+            android:layout_height="wrap_content"
+            android:id="@+id/record"
+            app:buttonTint="#e0e0e0"
+
+            android:padding="20dp"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#e0e0e0" />
+    </LinearLayout>
+
 
 </RelativeLayout>

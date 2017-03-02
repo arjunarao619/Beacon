@@ -60,30 +60,6 @@ boolean DISABLE_SHAKE = true;
 
 
 
-        final FrameLayout optionsFrame = (FrameLayout) findViewById(R.id.optionsFrame);
-        optionsFrame.setVisibility(View.GONE);
-
-       final RadioButton radioDiscrete = (RadioButton) findViewById(R.id.is_discrete);
-       final  RadioButton radioLoud = (RadioButton) findViewById(R.id.is_loud);
-
-        ToggleButton toggle = (ToggleButton) findViewById(R.id.disable_shake);
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    DISABLE_SHAKE = true;
-                    optionsFrame.setVisibility(View.VISIBLE);
-
-                    radioDiscrete.setChecked(true);
-                } else {
-                   DISABLE_SHAKE = false;
-                    optionsFrame.setVisibility(View.GONE);
-
-                    radioDiscrete.setChecked(false);
-                    radioLoud.setChecked(false);
-
-                }
-            }
-        });
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -138,24 +114,7 @@ boolean DISABLE_SHAKE = true;
 
     }
 
-    public void onNotif(View view){
 
-
-        boolean checked = ((RadioButton)view).isChecked();
-
-        switch(view.getId()){
-            case R.id.is_discrete:
-                if(checked){
-
-                }
-
-            case R.id.is_loud:
-                if(checked){
-
-                }
-
-        }
-    }
 
 
 

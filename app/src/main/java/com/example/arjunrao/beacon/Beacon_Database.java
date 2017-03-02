@@ -35,11 +35,12 @@ public class Beacon_Database extends SQLiteOpenHelper {
                 + "NUMBER TEXT);";
         db.execSQL(table_contacts_create);
 
-        String table_shortcut_options = "CREATE TABLE OPTIONS(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "ISDISCRETE TEXT, "
-                 + "ISLOUD TEXT, "
-                + "ISRECORD TEXT);";
-        db.execSQL(table_shortcut_options);
+      String emergency = "CREATE TABLE OPTIONS(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+              "ISLOCATION TEXT, "
+                + "ISRECORD TEXT, "
+              + "ISFOLLOW TEXT);";
+
+        db.execSQL(emergency);
 
 
 

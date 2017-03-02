@@ -134,11 +134,12 @@ public class UserLocation2 extends AppCompatActivity  {
         }
 
 
-
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
+        ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
 
-        Intent serviceIntent = new Intent(UserLocation2.this,ShakeService1.class);
-        startService(serviceIntent);
+
+
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager
                 .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -772,6 +773,18 @@ public class UserLocation2 extends AppCompatActivity  {
                 enableLocation(true);
             }
         }
+
+        switch (requestCode) {
+            case 1001: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && (ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                    Intent serviceIntent = new Intent(UserLocation2.this,ShakeService1.class);
+                    startService(serviceIntent);
+                }
+            }
+        }
     }
 
 
@@ -910,6 +923,10 @@ public class UserLocation2 extends AppCompatActivity  {
         }
         return haveConnectedWifi || haveConnectedMobile;
     }
+
+
+
+
 
 
 

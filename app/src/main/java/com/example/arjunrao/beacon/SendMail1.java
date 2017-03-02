@@ -35,7 +35,7 @@ public class SendMail1 extends AsyncTask<Void,Void,Void> {
     private String message;
 
     //Progressdialog to show while sending email
-    private ProgressDialog progressDialog;
+
 
     //Class Constructor
     public SendMail1(Context context, String email, String subject, String message){
@@ -50,14 +50,14 @@ public class SendMail1 extends AsyncTask<Void,Void,Void> {
     protected void onPreExecute() {
         super.onPreExecute();
         //Showing progress dialog while sending email
-        progressDialog = ProgressDialog.show(context,"Sending Location With Email & SMS ","Please wait...",false,false);
+
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         //Dismissing the progress dialog
-        progressDialog.dismiss();
+
 
 
 
