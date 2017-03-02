@@ -56,6 +56,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     private boolean EMAIL_SUCCESS = false;
     MediaPlayer mediaPlayer;
     private String SENDTOTHISEMAIL;
+    private int islocation,isfollow,isrecord;
     private SQLiteDatabase db, contactDb;
     String address, city, state, country, postalCode, knownName;
     private Cursor cursor, contactCursor;
@@ -99,7 +100,9 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
-        Toast.makeText(getApplicationContext(), "Started", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "The Beacon Service Has Started", Toast.LENGTH_LONG).show();
+        Beacon_Database dbHelper = new Beacon_Database(ShakeService1.this);
+        db = dbHelper.getReadableDatabase();
         super.onCreate();
     }
 
@@ -237,8 +240,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
         }
 
         final String EMAIL_MESSAGE ="Your Trusted Contact Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-        Beacon_Database dbHelper = new Beacon_Database(ShakeService1.this);
-        db = dbHelper.getReadableDatabase();
+
         cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
         if(cursor.moveToFirst()){
             cursor.moveToFirst();
