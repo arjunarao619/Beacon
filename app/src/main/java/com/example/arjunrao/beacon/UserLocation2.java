@@ -1,6 +1,7 @@
 package com.example.arjunrao.beacon;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,8 +24,10 @@ import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -35,6 +38,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,11 +46,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -57,13 +67,21 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 
 
-public class UserLocation2 extends AppCompatActivity  {
-
+public class UserLocation2 extends AppCompatActivity {
 
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -72,11 +90,7 @@ public class UserLocation2 extends AppCompatActivity  {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
             mediaPlayer.stop();
-            /* Do three things
-            - change the activity
-            - change the title in the action bar
-            - close the drawer
-             */
+
 
             selectItem(position);
 
@@ -107,6 +121,7 @@ public class UserLocation2 extends AppCompatActivity  {
     String[] numbers = new String[10];
     private static final int PERMISSIONS_LOCATION = 0;
     private String SENDTOTHISEMAIL;
+    double hospital_lat,hospital_long;
 
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
     private boolean SMS_SUCCESS = false;
@@ -116,6 +131,7 @@ public class UserLocation2 extends AppCompatActivity  {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
+    GoogleApiClient mGoogleApiClient;
 
 
     @Override
@@ -132,6 +148,7 @@ public class UserLocation2 extends AppCompatActivity  {
             Toast.makeText(UserLocation2.this, "Error Determining Address. Using GPS", Toast.LENGTH_LONG).show();
 
         }
+
 
 
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
@@ -213,6 +230,16 @@ public class UserLocation2 extends AppCompatActivity  {
 
         Beacon_Database beacon_database = new Beacon_Database(this);
         db = beacon_database.getReadableDatabase();
+
+        ImageButton hospitalFinder = (ImageButton) findViewById(R.id.hospitals);
+        hospitalFinder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StringBuilder sbValue = new StringBuilder(sbMethod());
+                PlacesTask placesTask = new PlacesTask();
+                placesTask.execute(sbValue.toString());
+            }
+        });
 
 
 
@@ -634,8 +661,9 @@ public class UserLocation2 extends AppCompatActivity  {
 
     @Override
     public void onResume() {
-        super.onResume();
         mapView.onResume();
+        super.onResume();
+
 
 
 
@@ -645,6 +673,7 @@ public class UserLocation2 extends AppCompatActivity  {
     @Override
     public void onPause() {
         super.onPause();
+        mapView.onPause();
 
     }
 
@@ -690,7 +719,8 @@ public class UserLocation2 extends AppCompatActivity  {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLocation), 13));
                 latitude = lastLocation.getLatitude();
                 longitude = lastLocation.getLongitude();
-                if (latitude == 0.0){
+
+                if (latitude < 1.00){
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
                     alertDialog.setTitle("No Network Connection");
                     alertDialog.setMessage("Your Are Not Connected. Try Again..");
@@ -740,6 +770,7 @@ public class UserLocation2 extends AppCompatActivity  {
 
                 map.animateCamera(CameraUpdateFactory
                         .newCameraPosition(position), 7000);
+
             }
 
             locationServices.addLocationListener(new LocationListener() {
@@ -924,21 +955,190 @@ public class UserLocation2 extends AppCompatActivity  {
         return haveConnectedWifi || haveConnectedMobile;
     }
 
+    public StringBuilder sbMethod() {
+
+        //use your current location here
+
+
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("location=" + latitude + "," + longitude);
+        sb.append("&radius=2000");
+        sb.append("&types=" + "doctor");
+        sb.append("&sensor=true");
+        sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
+
+        Log.d("Map", "api: " + sb.toString());
+
+        return sb;
+    }
+
+
+    private class PlacesTask extends AsyncTask<String, Integer, String> {
+
+        String data = null;
+
+        // Invoked by execute() method of this object
+        @Override
+        protected String doInBackground(String... url) {
+            try {
+                data = downloadUrl(url[0]);
+            } catch (Exception e) {
+                //TODO SHOW PROGRESSDIALOG
+                Log.d("Background Task", e.toString());
+            }
+            return data;
+        }
+
+        // Executed after the complete execution of doInBackground() method
+        @Override
+        protected void onPostExecute(String result) {
+            ParserTask parserTask = new ParserTask();
+
+            // Start parsing the Google places in JSON format
+            // Invokes the "doInBackground()" method of the class ParserTask
+            parserTask.execute(result);
+        }
+    }
+
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            // Creating an http connection to communicate with url
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Connecting to url
+            urlConnection.connect();
+
+            // Reading data from url
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+
+    private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+
+        JSONObject jObject;
+
+
+        // Invoked by execute() method of this object
+        @Override
+        protected List<HashMap<String, String>> doInBackground(String... jsonData) {
+
+            List<HashMap<String, String>> places = null;
+            Place_JSON placeJson = new Place_JSON();
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+
+                places = placeJson.parse(jObject);
+
+            } catch (Exception e) {
+                Log.d("Exception", e.toString());
+            }
+            return places;
+        }
+
+        // Executed after the complete execution of doInBackground() method
+        @Override
+        protected void onPostExecute(List<HashMap<String, String>> list) {
+
+
+            // Clears all the existing markers;
 
 
 
 
+                // Creating a marker
+                MarkerOptions markerOptions = new MarkerOptions();
+
+                // Getting a place from the places list
+                HashMap<String, String> hmPlace = list.get(0);
+
+
+                // Getting latitude of the place
+               final double lat = Double.parseDouble(hmPlace.get("lat"));
+
+                // Getting longitude of the place
+              final  double lng = Double.parseDouble(hmPlace.get("lng"));
+
+                // Getting name
+                String name = hmPlace.get("place_name");
+
+                Log.d("Map", "place: " + name);
+
+                // Getting vicinity
+                String vicinity = hmPlace.get("vicinity");
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(UserLocation2.this);
+            builder.setTitle("Directions");
+            builder.setMessage("Do You Want To Be Directed To " + name + "?");
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    LatLng latLng = new LatLng(lat, lng);
+
+                    // Setting the position for the marker
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                            Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
+                    startActivity(intent);
+                }
+            }).show();
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
 
 
 
 
-
-
-
-
-
-
-
+        }
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

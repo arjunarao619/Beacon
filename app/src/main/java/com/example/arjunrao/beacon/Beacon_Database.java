@@ -1,5 +1,6 @@
 package com.example.arjunrao.beacon;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -36,11 +37,19 @@ public class Beacon_Database extends SQLiteOpenHelper {
         db.execSQL(table_contacts_create);
 
       String emergency = "CREATE TABLE OPTIONS(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-              "ISLOCATION TEXT, "
-                + "ISRECORD TEXT, "
-              + "ISFOLLOW TEXT);";
+              "ISLOCATION INTEGER, "
+                + "ISFOLLOW INTEGER, "
+              + "ISRECORD INTEGER);";
 
         db.execSQL(emergency);
+
+        ContentValues values = new ContentValues();
+        values.put("ISLOCATION",0);
+        values.put("ISFOLLOW",0);
+        values.put("ISRECORD",0);
+
+        db.insert("OPTIONS",null,values);
+
 
 
 

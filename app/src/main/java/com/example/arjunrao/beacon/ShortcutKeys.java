@@ -1,26 +1,31 @@
 package com.example.arjunrao.beacon;
 
 import android.app.ActionBar;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.ToggleButton;
 
 public class ShortcutKeys extends AppCompatActivity {
@@ -47,7 +52,9 @@ boolean DISABLE_SHAKE = true;
 
     private ListView drawerList;
     final Context context = this;
+    public boolean is_follow,is_record,is_location;
     public DrawerLayout drawerLayout;
+    private Cursor optionsCursor;
     public ActionBarDrawerToggle drawerToggle;
 
     @Override
@@ -57,6 +64,79 @@ boolean DISABLE_SHAKE = true;
 
         Beacon_Database optionsHelper = new Beacon_Database(ShortcutKeys.this);
         db = optionsHelper.getReadableDatabase();
+        final CheckBox isfollow = (CheckBox) findViewById(R.id.follow_me);
+        isfollow.setVisibility(View.GONE);
+        final CheckBox record = (CheckBox) findViewById(R.id.record);
+        record.setVisibility(View.GONE);
+        ToggleButton enabled = (ToggleButton) findViewById(R.id.switchEnabled);
+
+
+        optionsCursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
+        optionsCursor.moveToFirst();
+        if(optionsCursor.getInt(0) == 1){
+            is_location = true;
+
+            enabled.performClick();
+            isfollow.setVisibility(View.VISIBLE);
+            record.setVisibility(View.VISIBLE);
+        }else {is_location = false;
+            enabled.setChecked(false);
+            isfollow.setVisibility(View.GONE);
+            record.setVisibility(View.GONE);}
+
+        if(optionsCursor.getInt(1) == 1){
+            is_follow = true;
+            enabled.setChecked(true);
+            isfollow.setVisibility(View.VISIBLE);
+            record.setVisibility(View.VISIBLE);
+
+        }else is_follow = false;
+        if(optionsCursor.getInt(2) == 1){
+            is_record = true;
+
+            enabled.setChecked(true);
+        }else is_record = false;
+        enabled.setChecked(false);
+
+
+       enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           @Override
+           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if(isChecked){
+                   isfollow.setVisibility(View.VISIBLE);
+                   record.setVisibility(View.VISIBLE);
+                   is_location = true;
+                   int location,follow,record1;
+                   ContentValues values = new ContentValues();
+                   if(is_location)location = 1; else location = 0;
+                   if(is_follow) follow = 1; else follow = 0;
+                   if(is_record) record1 = 1; else record1 = 0;
+                   values.put("ISLOCATION",location);
+                   values.put("ISFOLLOW",follow);
+                   values.put("ISRECORD",record1);
+
+                   db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+               }
+               else{
+                   is_location = false;
+                   isfollow.setVisibility(View.GONE);
+                   record.setVisibility(View.GONE);
+                   int location,follow,record1;
+                   ContentValues values = new ContentValues();
+                   if(is_location)location = 1; else location = 0;
+                   if(is_follow) follow = 1; else follow = 0;
+                   if(is_record) record1 = 1; else record1 = 0;
+                   values.put("ISLOCATION",location);
+                   values.put("ISFOLLOW",follow);
+                   values.put("ISRECORD",record1);
+
+                   db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+               }
+
+           }
+       });
+
+
 
 
 
@@ -106,6 +186,51 @@ boolean DISABLE_SHAKE = true;
         };
 
         drawerLayout.addDrawerListener(drawerToggle);
+
+
+
+        if(isfollow.isChecked()){
+            is_follow = true;
+            int location,follow,record1;
+            ContentValues values = new ContentValues();
+            if(is_location)location = 1; else location = 0;
+            if(is_follow) follow = 1; else follow = 0;
+            if(is_record) record1 = 1; else record1 = 0;
+            values.put("ISLOCATION",location);
+            values.put("ISFOLLOW",follow);
+            values.put("ISRECORD",record1);
+
+            db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+        }
+        if(record.isChecked()){
+            is_record = true;
+            int location,follow,record1;
+            ContentValues values = new ContentValues();
+            if(is_location)location = 1; else location = 0;
+            if(is_follow) follow = 1; else follow = 0;
+            if(is_record) record1 = 1; else record1 = 0;
+            values.put("ISLOCATION",location);
+            values.put("ISFOLLOW",follow);
+            values.put("ISRECORD",record1);
+
+            db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+        }
+
+        if(!is_location){
+            enabled.setChecked(false);
+            is_follow = false;
+            is_record = false;
+            int location,follow,record1;
+            ContentValues values = new ContentValues();
+            if(is_location)location = 1; else location = 0;
+            if(is_follow) follow = 1; else follow = 0;
+            if(is_record) record1 = 1; else record1 = 0;
+            values.put("ISLOCATION",location);
+            values.put("ISFOLLOW",follow);
+            values.put("ISRECORD",record1);
+
+            db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+        }
 
 
 
@@ -225,5 +350,79 @@ boolean DISABLE_SHAKE = true;
         return true;
     }
 
-    //TODO BEACON DATABASE WITH OPTIONS, VALIDATE IN ON RESTART, ON PAUSE AND ON DESTROY METHOD
+    @Override
+    public void onPause() {
+        super.onPause();
+        int location,follow,record1;
+        ContentValues values = new ContentValues();
+        if(is_location)location = 1; else location = 0;
+        if(is_follow) follow = 1; else follow = 0;
+        if(is_record) record1 = 1; else record1 = 0;
+        values.put("ISLOCATION",location);
+        values.put("ISFOLLOW",follow);
+        values.put("ISRECORD",record1);
+
+        db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        int location,follow,record1;
+        ContentValues values = new ContentValues();
+        if(is_location)location = 1; else location = 0;
+        if(is_follow) follow = 1; else follow = 0;
+        if(is_record) record1 = 1; else record1 = 0;
+        values.put("ISLOCATION",location);
+        values.put("ISFOLLOW",follow);
+        values.put("ISRECORD",record1);
+
+        db.update("OPTIONS",values,"_id = ?",new String[] {Integer.toString(1)});
+
+
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Beacon_Database optionsHelper = new Beacon_Database(ShortcutKeys.this);
+        db = optionsHelper.getReadableDatabase();
+        final CheckBox isfollow = (CheckBox) findViewById(R.id.follow_me);
+        isfollow.setVisibility(View.GONE);
+        final CheckBox record = (CheckBox) findViewById(R.id.record);
+        record.setVisibility(View.GONE);
+        ToggleButton enabled = (ToggleButton) findViewById(R.id.switchEnabled);
+
+        optionsCursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
+        optionsCursor.moveToFirst();
+        if(optionsCursor.getInt(0) == 1){
+            is_location = true;
+
+            enabled.performClick();
+            isfollow.setVisibility(View.VISIBLE);
+            record.setVisibility(View.VISIBLE);
+        }else {is_location = false;
+            enabled.setChecked(false);
+            isfollow.setVisibility(View.GONE);
+            record.setVisibility(View.GONE);}
+
+        if(optionsCursor.getInt(1) == 1){
+            is_follow = true;
+            enabled.setChecked(true);
+            isfollow.setVisibility(View.VISIBLE);
+            record.setVisibility(View.VISIBLE);
+
+        }else is_follow = false;
+        if(optionsCursor.getInt(2) == 1){
+            is_record = true;
+            enabled.performClick();
+            enabled.setChecked(true);
+        }else is_record = false;
+        enabled.setChecked(false);
+    }
+
+
 }

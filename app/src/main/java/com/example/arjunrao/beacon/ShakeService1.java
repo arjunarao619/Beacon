@@ -56,6 +56,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     private boolean EMAIL_SUCCESS = false;
     MediaPlayer mediaPlayer;
     private String SENDTOTHISEMAIL;
+    private int is_location,is_follow,is_record;
     private int islocation,isfollow,isrecord;
     private SQLiteDatabase db, contactDb;
     String address, city, state, country, postalCode, knownName;
@@ -103,6 +104,8 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
         Toast.makeText(getApplicationContext(), "The Beacon Service Has Started", Toast.LENGTH_LONG).show();
         Beacon_Database dbHelper = new Beacon_Database(ShakeService1.this);
         db = dbHelper.getReadableDatabase();
+
+
         super.onCreate();
     }
 
@@ -123,7 +126,17 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             }
             lastUpdate = actualTime;
             ///////////////////////////////////////////////////////////
-            mGoogleApiClient.connect();
+            Cursor cursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
+            cursor.moveToFirst();
+            is_location = cursor.getInt(0);
+            is_follow = cursor.getInt(1);
+            is_record = cursor.getInt(2);
+
+            if(is_location == 1){
+                mGoogleApiClient.connect();
+                Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
+                v.vibrate(1000);
+            }
 
 
 
@@ -133,8 +146,8 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
 
 
-            Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
-            v.vibrate(1000);
+
+
 
             ///////////////////////////////////////////////////////
             Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -148,7 +161,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     public void onDestroy() {
         // TODO Auto-generated method stub
         sensorManager.unregisterListener(listen);
-        Toast.makeText(this, "Destroy", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Destroyed Beacon Service", Toast.LENGTH_SHORT).show();
         mGoogleApiClient.disconnect();
         super.onDestroy();
     }
@@ -177,24 +190,15 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
     }
 
-    public void showSettingsAlert(String provider) {
 
-
-        Intent intent = new Intent(
-                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(intent);
-
-
-
-
-
-    }
 
     @Override
     public void onConnected(Bundle bundle){
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        if(is_follow == 1){
+            mLocationRequest.setInterval(600000);
+        }
         checkPermission(this);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
 
@@ -203,77 +207,90 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(LOG_TAG,"Connection Suspended");
+
     }
 
     @Override
     public void onLocationChanged(Location location){
-        Toast.makeText(ShakeService1.this,location.toString(),Toast.LENGTH_LONG).show(); //DEBUG ONLY
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        altitude = location.getAltitude();
+
+        if(is_location == 1){
+
+            Toast.makeText(ShakeService1.this,location.toString(),Toast.LENGTH_LONG).show(); //DEBUG ONLY
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            altitude = location.getAltitude();
 
 
 
 
-        Geocoder geocoder;
-        List<Address> addresses;
-        geocoder = new Geocoder(this, Locale.getDefault());
-        try{
+            Geocoder geocoder;
+            List<Address> addresses;
+            geocoder = new Geocoder(this, Locale.getDefault());
+            try{
 
 
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                addresses = geocoder.getFromLocation(latitude, longitude, 1);
 
-            // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
-            address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-            city = addresses.get(0).getLocality();
-            state = addresses.get(0).getAdminArea();
-            country = addresses.get(0).getCountryName();
-            postalCode = addresses.get(0).getPostalCode();
-            knownName = addresses.get(0).getFeatureName();
+                address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                city = addresses.get(0).getLocality();
+                state = addresses.get(0).getAdminArea();
+                country = addresses.get(0).getCountryName();
+                postalCode = addresses.get(0).getPostalCode();
+                knownName = addresses.get(0).getFeatureName();
 
 
 
-        }catch(Exception exc){
-            Toast.makeText(ShakeService1.this,"Error Determining Address. Switching to GPS",Toast.LENGTH_LONG).show();
-            //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        }
+            }catch(Exception exc){
+                Toast.makeText(ShakeService1.this,"Error Determining Address. Switching to GPS",Toast.LENGTH_LONG).show();
+                //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
 
-        final String EMAIL_MESSAGE ="Your Trusted Contact Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+            final String EMAIL_MESSAGE ="Your Trusted Contact Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
 
-        cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
-        if(cursor.moveToFirst()){
-            cursor.moveToFirst();
-            SENDTOTHISEMAIL = cursor.getString(0);
-            final SmsManager smsManager = SmsManager.getDefault();
-            Beacon_Database contactHelper = new Beacon_Database(ShakeService1.this);//for SMS
-            contactDb = contactHelper.getReadableDatabase();
-            contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
-            Cursor countCursor;
-            countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
+            cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
+            if(cursor.moveToFirst()){
+                cursor.moveToFirst();
+                SENDTOTHISEMAIL = cursor.getString(0);
+                final SmsManager smsManager = SmsManager.getDefault();
+                Beacon_Database contactHelper = new Beacon_Database(ShakeService1.this);//for SMS
+                contactDb = contactHelper.getReadableDatabase();
+                contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
+                Cursor countCursor;
+                countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
 
-            if(contactCursor.moveToFirst()) {
-                contactCursor.moveToFirst();
-                countCursor.moveToFirst();
-                final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
+                if(contactCursor.moveToFirst()) {
+                    contactCursor.moveToFirst();
+                    countCursor.moveToFirst();
+                    final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
 
-                //retrieving each contact number
-                for (int i = 0; i < no_of_contacts; i++) {
-                    numbers[i] = contactCursor.getString(1);
-                    contactCursor.moveToNext();
+                    //retrieving each contact number
+                    for (int i = 0; i < no_of_contacts; i++) {
+                        numbers[i] = contactCursor.getString(1);
+                        contactCursor.moveToNext();
+                    }
+
+                    for (int i = 0; i <no_of_contacts; i++) {
+                        smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
+                    }
+
+                    sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
                 }
 
-                for (int i = 0; i <no_of_contacts; i++) {
-                    smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
-                }
+            }
 
-                sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
+            if(is_follow == 0){
+                mGoogleApiClient.disconnect();
+            }
+
+            if(is_record == 1){
+                //TODO RECORD AUDIO FOR TWO MINUTES
+
             }
 
         }
 
-
-        mGoogleApiClient.disconnect();
 
     }
 
