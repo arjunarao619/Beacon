@@ -34,4 +34,14 @@
     <string name="facebook_app_id">302134076856279</string>
     <string name="fb_login_protocol_scheme">302134076856279</string>
 
+    <string-array name="messages">
+        <item>I\'ll Be There In 5 Minutes</item>
+        <item>I\'ll Be There In Half An Hour</item>
+        <item>I\'ll Be There In An Hour</item>
+        <item>Call Me Immediately.It\'s An Emergency</item>
+        <item>I Just Reached</item>
+        <item>I\'m Leaving Now</item>
+
+    </string-array>
+
 </resources>

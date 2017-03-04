@@ -62,7 +62,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".Notifications"
+            android:name=".MessageTemplates"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_notifications"
             android:theme="@style/AppTheme" />

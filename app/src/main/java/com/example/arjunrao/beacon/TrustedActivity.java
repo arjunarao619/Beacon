@@ -83,7 +83,7 @@ public class TrustedActivity extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_emergency1,"Emergency Settings"),
                 new Navigation_Drawer(R.drawable.nav_location1,"Your Location"),
                 new Navigation_Drawer(R.drawable.nav_helpline1,"Helplines and Tips"),
-                new Navigation_Drawer(R.drawable.nav_notifications1,"Audio Settings"),
+                new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
                 new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
                 new Navigation_Drawer(R.drawable.nav_developer,"Developer")
 
@@ -302,7 +302,7 @@ public class TrustedActivity extends AppCompatActivity {
                 startActivity(intent3);
                 break;
             case 4:
-                Intent intent4 = new Intent(TrustedActivity.this, Notifications.class);
+                Intent intent4 = new Intent(TrustedActivity.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
             case 5:

@@ -1,9 +1,6 @@
 package com.example.arjunrao.beacon;
 
-import android.*;
-import android.Manifest;
 import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,10 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -29,7 +23,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -41,23 +34,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mapbox.mapboxsdk.MapboxAccountManager;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -195,7 +183,7 @@ public class UserLocation2 extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_emergency1, "Emergency Settings"),
                 new Navigation_Drawer(R.drawable.nav_location1, "Your Location"),
                 new Navigation_Drawer(R.drawable.nav_helpline1, "Helplines and Tips"),
-                new Navigation_Drawer(R.drawable.nav_notifications1, "Audio Settings"),
+                new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
                 new Navigation_Drawer(R.drawable.nav_message1, "Email and SMS"),
                 new Navigation_Drawer(R.drawable.nav_developer, "Developer"),
 
@@ -248,7 +236,7 @@ public class UserLocation2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 StringBuilder sbValue = new StringBuilder(sbMethod1());
-                PlacesTask placesTask = new PlacesTask();
+                PlacesTask1 placesTask = new PlacesTask1();
                 placesTask.execute(sbValue.toString());
             }
         });
@@ -851,7 +839,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main,menu);
+        inflater.inflate(R.menu.menu_location,menu);
         return true;
 
     }
@@ -867,6 +855,13 @@ public class UserLocation2 extends AppCompatActivity {
             case R.id.settings:
                 Intent intent = new Intent(UserLocation2.this, MainDashBoard.class);
                 startActivity(intent);
+
+            case R.id.atm:
+
+
+                StringBuilder sbValue = new StringBuilder(sbMethod2());
+                PlacesTask placesTask = new PlacesTask();
+                placesTask.execute(sbValue.toString());
         }
         return true;
         }
@@ -898,7 +893,7 @@ public class UserLocation2 extends AppCompatActivity {
                 startActivity(intent3);
                 break;
             case 4:
-                Intent intent4 = new Intent(UserLocation2.this, Notifications.class);
+                Intent intent4 = new Intent(UserLocation2.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
             case 5:
@@ -977,6 +972,23 @@ public class UserLocation2 extends AppCompatActivity {
         sb.append("location=" + latitude + "," + longitude);
         sb.append("&radius=2000");
         sb.append("&types=" + "doctor");
+        sb.append("&sensor=true");
+        sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
+
+        Log.d("Map", "api: " + sb.toString());
+
+        return sb;
+    }
+
+    public StringBuilder sbMethod2() {
+
+        //use your current location here
+
+
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("location=" + latitude + "," + longitude);
+        sb.append("&radius=2000");
+        sb.append("&types=" + "atm");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
 
@@ -1104,17 +1116,189 @@ public class UserLocation2 extends AppCompatActivity {
 
 
                 // Creating a marker
-                MarkerOptions markerOptions = new MarkerOptions();
+                try{
+                    // Getting a place from the places list
 
+
+                    // Getting latitude of the place
+
+                    HashMap<String, String> hmPlace = list.get(9);
+                    final double lat = Double.parseDouble(hmPlace.get("lat"));
+
+                    // Getting longitude of the place
+                    final  double lng = Double.parseDouble(hmPlace.get("lng"));
+
+                    // Getting name
+                    String name = hmPlace.get("place_name");
+
+                    Log.d("Map", "place: " + name);
+
+                    // Getting vicinity
+                    String vicinity = hmPlace.get("vicinity");
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(UserLocation2.this);
+                    builder.setTitle("Directions");
+                    builder.setMessage("Do You Want To Be Directed To " + name + "?");
+                    builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            LatLng latLng = new LatLng(lat, lng);
+
+                            // Setting the position for the marker
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                    Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
+                            startActivity(intent);
+                        }
+                    }).show();
+
+                    builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+
+                }catch(Exception exc){
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
+                    dialog.setTitle("ERROR");
+                    dialog.setMessage("Click On The Circular Locate Butotn before Finding Nearest ATM");
+                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+                }
+
+
+
+
+
+        }
+    }
+
+
+
+
+
+    private class PlacesTask1 extends AsyncTask<String, Integer, String> {
+
+        String data = null;
+
+        // Invoked by execute() method of this object
+        @Override
+        protected String doInBackground(String... url) {
+            try {
+                data = downloadUrl1(url[0]);
+            } catch (Exception e) {
+                //TODO SHOW PROGRESSDIALOG
+                Log.d("Background Task", e.toString());
+            }
+            return data;
+        }
+
+        // Executed after the complete execution of doInBackground() method
+        @Override
+        protected void onPostExecute(String result) {
+            ParserTask1 parserTask = new ParserTask1();
+
+            // Start parsing the Google places in JSON format
+            // Invokes the "doInBackground()" method of the class ParserTask
+            parserTask.execute(result);
+        }
+    }
+
+
+    private String downloadUrl1(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            // Creating an http connection to communicate with url
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Connecting to url
+            urlConnection.connect();
+
+            // Reading data from url
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+
+
+
+
+
+
+    private class ParserTask1 extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+
+        JSONObject jObject;
+
+
+        // Invoked by execute() method of this object
+        @Override
+        protected List<HashMap<String, String>> doInBackground(String... jsonData) {
+
+            List<HashMap<String, String>> places = null;
+            Place_JSON placeJson = new Place_JSON();
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+
+                places = placeJson.parse(jObject);
+
+            } catch (Exception e) {
+                Log.d("Exception", e.toString());
+            }
+            return places;
+        }
+
+        // Executed after the complete execution of doInBackground() method
+        @Override
+        protected void onPostExecute(List<HashMap<String, String>> list) {
+
+
+            // Clears all the existing markers;
+
+
+
+
+            // Creating a marker
+            try{
                 // Getting a place from the places list
-                HashMap<String, String> hmPlace = list.get(0);
 
 
                 // Getting latitude of the place
-               final double lat = Double.parseDouble(hmPlace.get("lat"));
+
+                HashMap<String, String> hmPlace = list.get(0);
+                final double lat = Double.parseDouble(hmPlace.get("lat"));
 
                 // Getting longitude of the place
-              final  double lng = Double.parseDouble(hmPlace.get("lng"));
+                final  double lng = Double.parseDouble(hmPlace.get("lng"));
 
                 // Getting name
                 String name = hmPlace.get("place_name");
@@ -1124,27 +1308,41 @@ public class UserLocation2 extends AppCompatActivity {
                 // Getting vicinity
                 String vicinity = hmPlace.get("vicinity");
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(UserLocation2.this);
-            builder.setTitle("Directions");
-            builder.setMessage("Do You Want To Be Directed To " + name + "?");
-            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    LatLng latLng = new LatLng(lat, lng);
 
-                    // Setting the position for the marker
-                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                            Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
-                    startActivity(intent);
-                }
-            }).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(UserLocation2.this);
+                builder.setTitle("Directions");
+                builder.setMessage("Do You Want To Be Directed To " + name + "?");
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LatLng latLng = new LatLng(lat, lng);
 
-            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            }).show();
+                        // Setting the position for the marker
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
+                        startActivity(intent);
+                    }
+                }).show();
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+
+            }catch(Exception exc){
+                AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
+                dialog.setTitle("ERROR");
+                dialog.setMessage("Click On The Circular Locate Butotn before Finding Nearest ATM");
+                dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+            }
+
 
 
 
