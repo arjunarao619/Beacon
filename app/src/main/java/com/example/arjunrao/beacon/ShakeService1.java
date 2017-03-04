@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,10 +22,12 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,8 +59,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     private boolean EMAIL_SUCCESS = false;
     MediaPlayer mediaPlayer;
     private String SENDTOTHISEMAIL;
-    private int is_location,is_follow,is_record;
-    private int islocation,isfollow,isrecord;
+    boolean is_alert,is_alarm,is_record;
     private SQLiteDatabase db, contactDb;
     String address, city, state, country, postalCode, knownName;
     private Cursor cursor, contactCursor;
@@ -68,6 +70,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     double latitude,longitude,altitude;
     protected LocationManager locationManager;
     String[] numbers = new String[10];
+    private AudioManager myAudioManager;
 
 
 
@@ -102,8 +105,12 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     public void onCreate() {
         // TODO Auto-generated method stub
         Toast.makeText(getApplicationContext(), "The Beacon Service Has Started", Toast.LENGTH_LONG).show();
-        Beacon_Database dbHelper = new Beacon_Database(ShakeService1.this);
-        db = dbHelper.getReadableDatabase();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+      is_alert = preferences.getBoolean("location",false);
+        is_alarm = preferences.getBoolean("alarm",false);
+        is_record = preferences.getBoolean("record",false);
+
+
 
 
         super.onCreate();
@@ -126,17 +133,27 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             }
             lastUpdate = actualTime;
             ///////////////////////////////////////////////////////////
-          /*  Cursor cursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
-            cursor.moveToFirst();
-            is_location = cursor.getInt(0);
-            is_follow = cursor.getInt(1);
-            is_record = cursor.getInt(2);*/
+
 
 
 
                 Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
                 v.vibrate(1000);
-            mGoogleApiClient.connect();
+                if(is_alert){
+                    mGoogleApiClient.connect();
+                }
+            if(is_alarm){
+                mediaPlayer = MediaPlayer.create(ShakeService1.this,R.raw.panic);
+                myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                myAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                myAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, myAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+                mediaPlayer.start();
+            }
+
+            if(is_record){
+                //TODO RECORD AUDIO
+            }
+
 
 
 
@@ -196,9 +213,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     public void onConnected(Bundle bundle){
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        if(is_follow == 1){
-            mLocationRequest.setInterval(600000);
-        }
+
         checkPermission(this);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,mLocationRequest,this);
 
@@ -215,7 +230,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
 
 
-            Toast.makeText(ShakeService1.this,location.toString(),Toast.LENGTH_LONG).show(); //DEBUG ONLY
+
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
@@ -248,46 +263,20 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             }
 
             final String EMAIL_MESSAGE ="Your Trusted Contact Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-
+            Beacon_Database dbHelper = new Beacon_Database(this);
+            db = dbHelper.getReadableDatabase();
             cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
             if(cursor.moveToFirst()){
                 cursor.moveToFirst();
                 SENDTOTHISEMAIL = cursor.getString(0);
                 final SmsManager smsManager = SmsManager.getDefault();
-                Beacon_Database contactHelper = new Beacon_Database(ShakeService1.this);//for SMS
-                contactDb = contactHelper.getReadableDatabase();
-                /*contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
-                Cursor countCursor;
-                countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
 
-                if(contactCursor.moveToFirst()) {
-                    contactCursor.moveToFirst();
-                    countCursor.moveToFirst();
-                    final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
-
-                    //retrieving each contact number
-                    for (int i = 0; i < no_of_contacts; i++) {
-                        numbers[i] = contactCursor.getString(1);
-                        contactCursor.moveToNext();
-                    }
-
-                    for (int i = 0; i <no_of_contacts; i++) {
-                        smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
-                    }
-
-
-                }*/
                 sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
             }
 
-            if(is_follow == 0){
-                mGoogleApiClient.disconnect();
-            }
 
-            if(is_record == 1){
-                //TODO RECORD AUDIO FOR TWO MINUTES
 
-            }
+
 
 
 

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.arjunrao.beacon">
 
@@ -7,37 +8,30 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-
     <uses-permission android:name="android.permission.VIBRATE" />
-
-
-
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/main_logo"
         android:label="Beacon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        >
-        <service android:name=".ShakeService1"/>
-
-        <activity android:name=".WelcomeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
+        android:theme="@style/AppTheme.NoActionBar">
+        <service android:name=".ShakeService1" />
 
         <activity
-            android:name=".MainDashBoard"
+            android:name=".WelcomeActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MainDashBoard"
             android:label="Settings"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".TrustedActivity"
-            android:screenOrientation="portrait"
             android:label="Your Trusted Contacts"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
         <!--
@@ -53,8 +47,8 @@
 
         <activity
             android:name=".UserLocation2"
-            android:screenOrientation="portrait"
             android:label="Your Location"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".EmailActivity"
@@ -63,18 +57,18 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".MessageTemplates"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_notifications"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ShortcutKeys"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_shortcut_keys"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".HelpLineActivity"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_help_line"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".HelpLines.India" />
         <activity android:name=".HelpLines.usa" />
@@ -84,21 +78,21 @@
         <activity android:name=".HelpLines.Russia" />
         <activity android:name=".HelpLines.China" />
         <activity android:name=".HelpLines.Spain" />
-        <activity android:name=".User_Name"
-            android:noHistory = "true"
-            />
-        <activity android:name=".SplashScreenActivity"
-            android:screenOrientation="portrait"
+        <activity
+            android:name=".User_Name"
+            android:noHistory="true" />
+        <activity
+            android:name=".SplashScreenActivity"
             android:noHistory="true"
-            android:theme = "@style/AppTheme.NoActionBar">
-
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Legal"></activity>
     </application>
-
 
 </manifest>

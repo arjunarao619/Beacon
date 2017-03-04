@@ -367,32 +367,34 @@ public class UserLocation2 extends AppCompatActivity {
 
 
 
+                        else if( contactCursor.moveToFirst()){
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
+                                    alertDialog.setTitle("Location Has Been Sent Successfully");
+                                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
 
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
-                                alertDialog.setTitle("Location Has Been Sent Successfully");
-                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
+                                        }
+                                    });
 
+                                    alertDialog.show();
+
+                                    try {
+                                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                        r.play();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-                                });
-
-                                alertDialog.show();
-
-                                try {
-                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                    r.play();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
-                            }
-                        }, 4500);
+                            }, 4500);
+                        }
+
 
                     } else {
                         AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);

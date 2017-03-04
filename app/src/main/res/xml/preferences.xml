@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+<PreferenceCategory
+    android:title="MOTION SETTINGS"
+    >
+    <CheckBoxPreference
+
+        android:key="location"
+        android:title="Alert Mode"
+        android:summary="Send Location Notification On Phone Shake"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key = "alarm"
+        android:title="Alarm On Shake"
+        android:summary="Sound An ALarm On Phone Shake"
+        android:defaultValue="false"/>
+
+
+</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="AUDIO RECORDING">
+
+        <CheckBoxPreference
+            android:title="Record Audio On Shake"
+            android:key = "record"
+            android:defaultValue="false"
+            android:summary="Record Audio For Two Minutes On Phone Shake"/>
+        <Preference
+            android:key = "legal"
+            android:title="Legal"/>
+
+    </PreferenceCategory>
+
+
+
+
+
+</PreferenceScreen>
