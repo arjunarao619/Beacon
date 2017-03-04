@@ -62,15 +62,15 @@ boolean DISABLE_SHAKE = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shortcut_keys);
 
-        Beacon_Database optionsHelper = new Beacon_Database(ShortcutKeys.this);
-        db = optionsHelper.getReadableDatabase();
+
         final CheckBox isfollow = (CheckBox) findViewById(R.id.follow_me);
         isfollow.setVisibility(View.GONE);
         final CheckBox record = (CheckBox) findViewById(R.id.record);
         record.setVisibility(View.GONE);
         ToggleButton enabled = (ToggleButton) findViewById(R.id.switchEnabled);
 
-
+        Beacon_Database optionsHelper = new Beacon_Database(ShortcutKeys.this);
+        db = optionsHelper.getReadableDatabase();
         optionsCursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
         optionsCursor.moveToFirst();
         if(optionsCursor.getInt(0) == 1){

@@ -1,5 +1,7 @@
 package com.example.arjunrao.beacon;
 
+import android.*;
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -236,6 +238,16 @@ public class UserLocation2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 StringBuilder sbValue = new StringBuilder(sbMethod());
+                PlacesTask placesTask = new PlacesTask();
+                placesTask.execute(sbValue.toString());
+            }
+        });
+
+        ImageButton policeFinder = (ImageButton) findViewById(R.id.police);
+        policeFinder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StringBuilder sbValue = new StringBuilder(sbMethod1());
                 PlacesTask placesTask = new PlacesTask();
                 placesTask.execute(sbValue.toString());
             }
@@ -810,7 +822,8 @@ public class UserLocation2 extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && (ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+                       /* || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED)*/ {
                     Intent serviceIntent = new Intent(UserLocation2.this,ShakeService1.class);
                     startService(serviceIntent);
                 }
@@ -964,6 +977,23 @@ public class UserLocation2 extends AppCompatActivity {
         sb.append("location=" + latitude + "," + longitude);
         sb.append("&radius=2000");
         sb.append("&types=" + "doctor");
+        sb.append("&sensor=true");
+        sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
+
+        Log.d("Map", "api: " + sb.toString());
+
+        return sb;
+    }
+
+    public StringBuilder sbMethod1() {
+
+        //use your current location here
+
+
+        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        sb.append("location=" + latitude + "," + longitude);
+        sb.append("&radius=2000");
+        sb.append("&types=" + "police");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
 

@@ -126,17 +126,17 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             }
             lastUpdate = actualTime;
             ///////////////////////////////////////////////////////////
-            Cursor cursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
+          /*  Cursor cursor = db.query("OPTIONS",new String[]{"ISLOCATION","ISFOLLOW","ISRECORD"},null,null,null,null,null,null);
             cursor.moveToFirst();
             is_location = cursor.getInt(0);
             is_follow = cursor.getInt(1);
-            is_record = cursor.getInt(2);
+            is_record = cursor.getInt(2);*/
 
-            if(is_location == 1){
-                mGoogleApiClient.connect();
+
+
                 Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
                 v.vibrate(1000);
-            }
+            mGoogleApiClient.connect();
 
 
 
@@ -213,7 +213,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     @Override
     public void onLocationChanged(Location location){
 
-        if(is_location == 1){
+
 
             Toast.makeText(ShakeService1.this,location.toString(),Toast.LENGTH_LONG).show(); //DEBUG ONLY
             latitude = location.getLatitude();
@@ -256,7 +256,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                 final SmsManager smsManager = SmsManager.getDefault();
                 Beacon_Database contactHelper = new Beacon_Database(ShakeService1.this);//for SMS
                 contactDb = contactHelper.getReadableDatabase();
-                contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
+                /*contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
                 Cursor countCursor;
                 countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
 
@@ -275,9 +275,9 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                         smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
                     }
 
-                    sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
-                }
 
+                }*/
+                sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
             }
 
             if(is_follow == 0){
@@ -289,7 +289,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
             }
 
-        }
+
 
 
     }
