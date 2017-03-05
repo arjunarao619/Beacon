@@ -7,7 +7,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -100,7 +104,7 @@ public class EmailActivity extends AppCompatActivity {
 
                 new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
 
-                new Navigation_Drawer(R.drawable.nav_developer,"Developer"),
+
 
         };
 
@@ -185,6 +189,34 @@ public class EmailActivity extends AppCompatActivity {
                                 Toast.makeText(EmailActivity.this,debugCursor.getString(0),Toast.LENGTH_LONG).show();*/
 
                                 sendEmail(SENDTOTHISEMAIL, "Welcome to Beacon!", EMAIL_MESSAGE);
+
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(EmailActivity.this);
+                                        alertDialog.setTitle("Email Has Been Sent Succesfully");
+                                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+
+                                            }
+                                        });
+
+                                        alertDialog.show();
+
+                                        try {
+                                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                            r.play();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 4500);
+
+
                             }
                         });
                         alertDialog.show();
@@ -249,7 +281,7 @@ public class EmailActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case 1:
-                Intent intent1 = new Intent(EmailActivity.this, ShortcutKeys.class);
+                Intent intent1 = new Intent(EmailActivity.this, MainDashBoard.class);
                 startActivity(intent1);
                 break;
             case 2:
@@ -268,21 +300,7 @@ public class EmailActivity extends AppCompatActivity {
                 Intent intent5 = new Intent(EmailActivity.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
-            case 6:
-                LayoutInflater li = LayoutInflater.from(context);
-                View devView = li.inflate(R.layout.about_developer_dialog, null);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setView(devView);
-
-
-                builder.setCancelable(false).setPositiveButton("GREAT!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
 
         }
 

@@ -4,15 +4,23 @@
 <PreferenceCategory
     android:title="MOTION SETTINGS"
     >
+    <Preference
+        android:icon = "@drawable/nav_contacts1"
+        android:title="Add Trusted Contacts"
+        android:key="contacts"
+
+        android:id="@+id/preference" />
     <CheckBoxPreference
 
         android:key="location"
+        android:icon="@drawable/alert_settings"
         android:title="Alert Mode"
         android:summary="Send Location Notification On Phone Shake"
         android:defaultValue="false" />
 
     <CheckBoxPreference
         android:key = "alarm"
+        android:icon="@drawable/alarm_settings"
         android:title="Alarm On Shake"
         android:summary="Sound An ALarm On Phone Shake"
         android:defaultValue="false"/>
@@ -26,8 +34,53 @@
         <CheckBoxPreference
             android:title="Record Audio On Shake"
             android:key = "record"
+            android:icon="@drawable/record_settings"
             android:defaultValue="false"
             android:summary="Record Audio For Two Minutes On Phone Shake"/>
+
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="MESSAGE SETTINGS"
+        >
+
+        <EditTextPreference
+            android:icon="@drawable/user_preference"
+            android:title="User Name(Optional)"
+            android:defaultValue="Beacon User"
+            android:summary="This Name Will Be Used In All Alerts"
+            android:key = "user_name"/>
+
+        <SwitchPreference
+            android:icon="@drawable/yes_sms"
+            android:title="Send SMS"
+            android:key = "sms"
+            android:defaultValue="true"
+            android:summary="Enable Or Disable SMS Sending"
+            />
+
+        <Preference
+            android:title="Edit Email"
+            android:key="email"
+            android:icon="@drawable/email_settings"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="MAP">
+        <ListPreference
+            android:title="Map Style"
+            android:key="map_style"
+            android:icon= "@drawable/location"
+            android:summary="Change The Map Style"
+            android:entries="@array/style_names"
+            android:entryValues="@array/style_values"
+            android:dialogTitle="Select Map Theme"
+            android:defaultValue="@string/dark"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="OTHERS">
         <Preference
             android:key = "legal"
             android:title="Legal"/>

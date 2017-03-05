@@ -61,11 +61,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".ShortcutKeys"
-            android:label="@string/title_activity_shortcut_keys"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".HelpLineActivity"
             android:label="@string/title_activity_help_line"
             android:screenOrientation="portrait"
@@ -92,7 +87,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Legal"></activity>
+        <activity android:name=".Legal" />
+        <activity android:name=".HelpLines"></activity>
     </application>
 
 </manifest>

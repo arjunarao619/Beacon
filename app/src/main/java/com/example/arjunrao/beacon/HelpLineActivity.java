@@ -81,6 +81,15 @@ public class HelpLineActivity extends AppCompatActivity {
         countries.setAdapter(adapter1);
         //TODO CREATE ALL HELPLINES!
 
+        countries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(HelpLineActivity.this,HelpLines.class);
+                intent.putExtra("COUNTRY",String.valueOf(position));
+                startActivity(intent);
+            }
+        });
+
         //navigation drawer
 
         //  titles = getResources().getStringArray(R.array.titles);
@@ -98,7 +107,7 @@ public class HelpLineActivity extends AppCompatActivity {
 
                 new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
 
-                new Navigation_Drawer(R.drawable.nav_developer,"Developer"),
+
 
         };
 
@@ -137,7 +146,7 @@ public class HelpLineActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case 1:
-                Intent intent1 = new Intent(HelpLineActivity.this, ShortcutKeys.class);
+                Intent intent1 = new Intent(HelpLineActivity.this, MainDashBoard.class);
                 startActivity(intent1);
                 break;
             case 2:
@@ -156,21 +165,7 @@ public class HelpLineActivity extends AppCompatActivity {
                 Intent intent5 = new Intent(HelpLineActivity.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
-            case 6:
-                LayoutInflater li = LayoutInflater.from(context);
-                View devView = li.inflate(R.layout.about_developer_dialog, null);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setView(devView);
-
-
-                builder.setCancelable(false).setPositiveButton("GREAT!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
 
         }
 

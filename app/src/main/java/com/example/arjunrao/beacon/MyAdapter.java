@@ -50,6 +50,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int ViewType){
         CardView cv = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_cardview,parent,false);
+
         return new MyAdapter.ViewHolder(cv);
     }
 
@@ -68,8 +69,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                cardView.setBackgroundColor(Color.parseColor("#616161"));
-                cardView.setVisibility(View.GONE);
+
+
 
 
                 if(listener != null){

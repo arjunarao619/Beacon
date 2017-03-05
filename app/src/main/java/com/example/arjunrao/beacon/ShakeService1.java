@@ -137,9 +137,10 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
 
 
-                Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
-                v.vibrate(1000);
+
                 if(is_alert){
+                    Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
+                    v.vibrate(1000);
                     mGoogleApiClient.connect();
                 }
             if(is_alarm){

@@ -44,4 +44,23 @@
 
     </string-array>
 
+    <string-array name="style_names">
+        <item>Basic</item>
+        <item>Bright</item>
+        <item>Satellite</item>
+        <item>Dark</item>
+        <item>Traffic-Day</item>
+        <item>Traffic-Night</item>
+    </string-array>
+
+    <string-array name="style_values">
+        <item>mapbox://styles/arjunrao/cizwchvcp004p2sp8h5ll2syt</item>
+        <item>mapbox://styles/arjunrao/cizwcly4h00452smw4g3qko4e</item>
+        <item>mapbox://styles/arjunrao/cizwcl7eb004a2spfqkzcnfh6</item>
+        <item>mapbox://styles/arjunrao/ciy8jsmfa002n2roc1q4faomd</item>
+        <item>mapbox://styles/arjunrao/cizwclnuy003k2ro4gjyl00ae</item>
+        <item>mapbox://styles/arjunrao/ciy8ira80002s2rodsyp2xh0b</item>
+        <item></item>
+    </string-array>
+
 </resources>

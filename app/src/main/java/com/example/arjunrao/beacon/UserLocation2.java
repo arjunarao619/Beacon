@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -23,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -112,6 +114,7 @@ public class UserLocation2 extends AppCompatActivity {
     private static final int PERMISSIONS_LOCATION = 0;
     private String SENDTOTHISEMAIL;
     double hospital_lat,hospital_long;
+    private int locate_count = 0;
 
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS =0 ;
     private boolean SMS_SUCCESS = false;
@@ -122,6 +125,7 @@ public class UserLocation2 extends AppCompatActivity {
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
     GoogleApiClient mGoogleApiClient;
+    SharedPreferences mSharedPreferences;
 
 
     @Override
@@ -143,6 +147,11 @@ public class UserLocation2 extends AppCompatActivity {
 
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
         ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
+
+
+         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+
 
 
 
@@ -185,7 +194,7 @@ public class UserLocation2 extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_helpline1, "Helplines and Tips"),
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
                 new Navigation_Drawer(R.drawable.nav_message1, "Email and SMS"),
-                new Navigation_Drawer(R.drawable.nav_developer, "Developer"),
+
 
         };
 
@@ -250,124 +259,389 @@ public class UserLocation2 extends AppCompatActivity {
         sendLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (!haveNetworkConnection()) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
-                    dialog.setTitle("Error");
-                    dialog.setMessage("Please Enable Network Connection");
-                    dialog.setCancelable(false);
-                    dialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                if(locate_count == 0){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                    alertDialog.setTitle("ERROR");
+                    alertDialog.setMessage("Click On The Circular Locate Button Before Sending Your Location");
+                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                         }
                     }).show();
+                }
+                else{
+                    if (!haveNetworkConnection()) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
+                        dialog.setTitle("Error");
+                        dialog.setMessage("Please Enable Network Connection");
+                        dialog.setCancelable(false);
+                        dialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            }
+                        }).show();
 
-                } else {
+                    } else {
 
 
-                    cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
-                    if (cursor.moveToFirst()) {
-                        cursor.moveToFirst();
-                        SENDTOTHISEMAIL = cursor.getString(0);
+                        cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
+                        if (cursor.moveToFirst()) {
+                            cursor.moveToFirst();
+                            SENDTOTHISEMAIL = cursor.getString(0);
 
 
 
 
-                        final String EMAIL_MESSAGE = "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-                        if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
-                                "\n" +
-                                "Location Details : Address : null")) {
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
-                            alertDialog.setTitle("ERROR");
-                            alertDialog.setMessage("Check Your Network Connection or click on the Locate button");
-                            alertDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+                            if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
+                                    "\n" +
+                                    "Location Details : Address : null")) {
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                                alertDialog.setTitle("ERROR");
+                                alertDialog.setMessage("Check Your Network Connection or click on the Locate button");
+                                alertDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                alertDialog.show();
+                            }
+
+                            // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
+
+                            final SmsManager smsManager = SmsManager.getDefault();
+
+
+
+                            Beacon_Database contactHelper = new Beacon_Database(UserLocation2.this);//for SMS
+                            contactDb = contactHelper.getReadableDatabase();
+
+
+
+                            contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
+
+                            Cursor countCursor;
+                            countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
+                            if(contactCursor.moveToFirst()){
+                                contactCursor.moveToFirst();
+                                countCursor.moveToFirst();
+                                final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
+
+                                //retrieving each contact number
+                                for(int i=0;i<no_of_contacts;i++){
+                                    numbers[i] = contactCursor.getString(1);
+                                    contactCursor.moveToNext();
+                                }
+
+
+
+                                if (ContextCompat.checkSelfPermission(UserLocation2.this,
+                                        android.Manifest.permission.SEND_SMS)
+                                        != PackageManager.PERMISSION_GRANTED) {
+                                    if (ActivityCompat.shouldShowRequestPermissionRationale(UserLocation2.this,
+                                            android.Manifest.permission.SEND_SMS)) {
+                                    } else {
+                                        ActivityCompat.requestPermissions(UserLocation2.this,
+                                                new String[]{android.Manifest.permission.SEND_SMS},
+                                                MY_PERMISSIONS_REQUEST_SEND_SMS);
+                                    }
+                                }
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for (int i = 0; i <no_of_contacts; i++) {
+                                            smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
+                                        }
+                                    }},4500);
+
+
+                                sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
+                                final Handler handler1 = new Handler();
+                                handler1.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
+                                        alertDialog.setTitle("Location Has Been Sent Successfully");
+                                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+
+                                            }
+                                        });
+
+                                        alertDialog.show();
+
+                                        try {
+                                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                            r.play();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 4500);
+
+
+
+                            }
+                            else if(!contactCursor.moveToFirst()){
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                                alertDialog.setTitle("Choose Trusted Contacts");
+                                alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.");
+                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(UserLocation2.this,TrustedActivity.class);
+                                        startActivity(intent);
+
+                                    }
+                                }).show();
+
+                                alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+
+                            }
+
+
+
+                            else if( contactCursor.moveToFirst()){
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
+                                        alertDialog.setTitle("Location Has Been Sent Successfully");
+                                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+
+                                            }
+                                        });
+
+                                        alertDialog.show();
+
+                                        try {
+                                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                            r.play();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 4500);
+                            }
+
+
+                        } else {
+                            AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);
+                            alertdialog.setTitle("EMAIL ERROR");
+                            alertdialog.setMessage("LOOKS LIKE YOU FORGOT TO REGISTER A TRUSTED EMAIL WITH US");
+                            alertdialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(UserLocation2.this, EmailActivity.class);
+                                    startActivity(intent);
                                 }
                             });
-                            alertDialog.show();
+
+                            alertdialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+
+                            alertdialog.show();
+
                         }
 
-                       // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
 
-                        final SmsManager smsManager = SmsManager.getDefault();
+                    }
+
+                }
+
+            }
+        });
+
+        final Button panicButton = (Button) findViewById(R.id.panicButton);
+        panicButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
 
+                if(locate_count == 0){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                    alertDialog.setTitle("ERROR");
+                    alertDialog.setMessage("Click On The Circular Locate Button Before Sending Your Location");
+                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                           dialog.dismiss();
+                        }
+                    }).show();
+                }
+                else{
+                    mediaPlayer.start();
+                    panicButton.setVisibility(View.GONE);
+                    panicStop.setVisibility(View.VISIBLE);
+                    panicStop.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mediaPlayer.stop();
+                            panicStop.setVisibility(View.GONE);
+                            panicButton.setVisibility(View.VISIBLE);
+                        }
+                    });
 
-                        Beacon_Database contactHelper = new Beacon_Database(UserLocation2.this);//for SMS
-                        contactDb = contactHelper.getReadableDatabase();
+                    //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+                    if (!haveNetworkConnection()) {
+                        mediaPlayer.stop();
+                        panicStop.setVisibility(View.GONE);
+                        panicButton.setVisibility(View.VISIBLE);
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
+                        dialog.setTitle("Error");
+                        dialog.setMessage("Please Enable Network Connection");
 
-                        contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
-
-                        Cursor countCursor;
-                        countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
-                        if(contactCursor.moveToFirst()){
-                            contactCursor.moveToFirst();
-                            countCursor.moveToFirst();
-                            final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
-
-                        //retrieving each contact number
-                            for(int i=0;i<no_of_contacts;i++){
-                                numbers[i] = contactCursor.getString(1);
-                                contactCursor.moveToNext();
+                        dialog.setCancelable(false);
+                        dialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                             }
+                        }).show();
+
+                    } else {
+
+
+                        cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
+                        if (cursor.moveToFirst()) {
+                            cursor.moveToFirst();
+                            SENDTOTHISEMAIL = cursor.getString(0);
+                            EMAIL_SUCCESS = true;
 
 
 
-                            if (ContextCompat.checkSelfPermission(UserLocation2.this,
-                                    android.Manifest.permission.SEND_SMS)
-                                    != PackageManager.PERMISSION_GRANTED) {
-                                if (ActivityCompat.shouldShowRequestPermissionRationale(UserLocation2.this,
-                                        android.Manifest.permission.SEND_SMS)) {
-                                } else {
-                                    ActivityCompat.requestPermissions(UserLocation2.this,
-                                            new String[]{android.Manifest.permission.SEND_SMS},
-                                            MY_PERMISSIONS_REQUEST_SEND_SMS);
-                                }
-                            }
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i <no_of_contacts; i++) {
-                                       smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
+
+                            final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+                            if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
+                                    "\n" +
+                                    "Location Details : Address : null")) {
+                                mediaPlayer.stop();
+                                panicStop.setVisibility(View.GONE);
+                                panicButton.setVisibility(View.VISIBLE);
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                                alertDialog.setTitle("ERROR");
+                                alertDialog.setMessage("Check Your Network Connection or click on the Locate button");
+                                panicStop.setVisibility(View.GONE);
+                                alertDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
                                     }
-                                }},4500);
+                                });
+                                alertDialog.show();
+                            }
+
+                            // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
+
+                            final SmsManager smsManager = SmsManager.getDefault();
 
 
-                            sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
 
-                        }
-                        else if(!contactCursor.moveToFirst()){
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
-                            alertDialog.setTitle("Choose Trusted Contacts");
-                            alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.");
-                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(UserLocation2.this,TrustedActivity.class);
-                                    startActivity(intent);
+                            Beacon_Database contactHelper = new Beacon_Database(UserLocation2.this);//for SMS
+                            contactDb = contactHelper.getReadableDatabase();
+
+
+                            if (mSharedPreferences.getBoolean("sms", true)) {
+                                contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
+
+                                Cursor countCursor;
+                                countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
+                                if(contactCursor.moveToFirst()){
+                                    contactCursor.moveToFirst();
+                                    countCursor.moveToFirst();
+                                    final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
+
+                                    //retrieving each contact number
+                                    for(int i=0;i<no_of_contacts;i++){
+                                        numbers[i] = contactCursor.getString(1);
+                                        contactCursor.moveToNext();
+                                    }
+
+
+
+                                    if (ContextCompat.checkSelfPermission(UserLocation2.this,
+                                            android.Manifest.permission.SEND_SMS)
+                                            != PackageManager.PERMISSION_GRANTED) {
+                                        if (ActivityCompat.shouldShowRequestPermissionRationale(UserLocation2.this,
+                                                android.Manifest.permission.SEND_SMS)) {
+                                        } else {
+                                            ActivityCompat.requestPermissions(UserLocation2.this,
+                                                    new String[]{android.Manifest.permission.SEND_SMS},
+                                                    MY_PERMISSIONS_REQUEST_SEND_SMS);
+                                        }
+                                    }
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            for (int i = 0; i <no_of_contacts; i++) {
+                                                smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
+                                                SMS_SUCCESS = true;
+                                            }
+                                        }},6500);
+
 
                                 }
-                            }).show();
-
-                            alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
-
-                        }
 
 
+                                sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
+                                EMAIL_SUCCESS = true;
 
-                        else if( contactCursor.moveToFirst()){
+                            }
+                            else if(!contactCursor.moveToFirst()){
+                                mediaPlayer.stop();
+                                panicStop.setVisibility(View.GONE);
+                                panicButton.setVisibility(View.VISIBLE);
+                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
+                                alertDialog.setTitle("Choose Trusted Contacts");
+                                alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.Do You Want To Add Them?");
+                                panicStop.setVisibility(View.GONE);
+                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(UserLocation2.this,TrustedActivity.class);
+                                        startActivity(intent);
+
+                                    }
+                                }).show();
+
+                                alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+
+                            }
+
+
+
+
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
@@ -393,243 +667,39 @@ public class UserLocation2 extends AppCompatActivity {
                                     }
                                 }
                             }, 4500);
-                        }
 
-
-                    } else {
-                        AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);
-                        alertdialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(UserLocation2.this, EmailActivity.class);
-                                startActivity(intent);
-                            }
-                        });
-                        alertdialog.setTitle("EMAIL ERROR");
-                        alertdialog.setMessage("LOOKS LIKE YOU FORGOT TO REGISTER A TRUSTED EMAIL WITH US");
-                        alertdialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-
-                        alertdialog.show();
-
-                    }
-
-
-                }
-            }
-        });
-
-        final Button panicButton = (Button) findViewById(R.id.panicButton);
-        panicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                mediaPlayer.start();
-                panicButton.setVisibility(View.GONE);
-                panicStop.setVisibility(View.VISIBLE);
-                panicStop.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mediaPlayer.stop();
-                        panicStop.setVisibility(View.GONE);
-                        panicButton.setVisibility(View.VISIBLE);
-                    }
-                });
-
-                //////////////////////////////////////////////////////////////////////////////////////////////
-
-
-                if (!haveNetworkConnection()) {
-                    mediaPlayer.stop();
-                    panicStop.setVisibility(View.GONE);
-                    panicButton.setVisibility(View.VISIBLE);
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
-                    dialog.setTitle("Error");
-                    dialog.setMessage("Please Enable Network Connection");
-
-                    dialog.setCancelable(false);
-                    dialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                        }
-                    }).show();
-
-                } else {
-
-
-                    cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
-                    if (cursor.moveToFirst()) {
-                        cursor.moveToFirst();
-                        SENDTOTHISEMAIL = cursor.getString(0);
-                        EMAIL_SUCCESS = true;
-
-
-
-
-                        final String EMAIL_MESSAGE = "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-                        if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
-                                "\n" +
-                                "Location Details : Address : null")) {
+                        } else {
                             mediaPlayer.stop();
                             panicStop.setVisibility(View.GONE);
                             panicButton.setVisibility(View.VISIBLE);
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
-                            alertDialog.setTitle("ERROR");
-                            alertDialog.setMessage("Check Your Network Connection or click on the Locate button");
-                            panicStop.setVisibility(View.GONE);
-                            alertDialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                            AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);
+                            alertdialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(UserLocation2.this, EmailActivity.class);
+                                    startActivity(intent);
                                 }
                             });
-                            alertDialog.show();
-                        }
-
-                        // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
-
-                        final SmsManager smsManager = SmsManager.getDefault();
-
-
-
-                        Beacon_Database contactHelper = new Beacon_Database(UserLocation2.this);//for SMS
-                        contactDb = contactHelper.getReadableDatabase();
-
-
-
-                        contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
-
-                        Cursor countCursor;
-                        countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
-                        if(contactCursor.moveToFirst()){
-                            contactCursor.moveToFirst();
-                            countCursor.moveToFirst();
-                            final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
-
-                            //retrieving each contact number
-                            for(int i=0;i<no_of_contacts;i++){
-                                numbers[i] = contactCursor.getString(1);
-                                contactCursor.moveToNext();
-                            }
-
-
-
-                            if (ContextCompat.checkSelfPermission(UserLocation2.this,
-                                    android.Manifest.permission.SEND_SMS)
-                                    != PackageManager.PERMISSION_GRANTED) {
-                                if (ActivityCompat.shouldShowRequestPermissionRationale(UserLocation2.this,
-                                        android.Manifest.permission.SEND_SMS)) {
-                                } else {
-                                    ActivityCompat.requestPermissions(UserLocation2.this,
-                                            new String[]{android.Manifest.permission.SEND_SMS},
-                                            MY_PERMISSIONS_REQUEST_SEND_SMS);
-                                }
-                            }
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
+                            alertdialog.setTitle("EMAIL ERROR");
+                            alertdialog.setMessage("Looks Like You Forgot To Register A Trusted Contacts' Email. Do You Want To Add Them Now?");
+                            alertdialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void run() {
-                                    for (int i = 0; i <no_of_contacts; i++) {
-                                        smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
-                                        SMS_SUCCESS = true;
-                                    }
-                                }},6500);
-
-
-                            sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
-                            EMAIL_SUCCESS = true;
-
-                        }
-                        else if(!contactCursor.moveToFirst()){
-                            mediaPlayer.stop();
-                            panicStop.setVisibility(View.GONE);
-                            panicButton.setVisibility(View.VISIBLE);
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
-                            alertDialog.setTitle("Choose Trusted Contacts");
-                            alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.");
-                            panicStop.setVisibility(View.GONE);
-                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(UserLocation2.this,TrustedActivity.class);
-                                    startActivity(intent);
-
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
                                 }
-                            }).show();
+                            });
 
-                            alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            }).show();
+                            alertdialog.show();
 
                         }
 
-
-
-
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
-                                alertDialog.setTitle("Location Has Been Sent Successfully");
-                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.dismiss();
-
-                                    }
-                                });
-
-                                alertDialog.show();
-
-                                try {
-                                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                    r.play();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }, 4500);
-
-                    } else {
-                        mediaPlayer.stop();
-                        panicStop.setVisibility(View.GONE);
-                        panicButton.setVisibility(View.VISIBLE);
-                        AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);
-                        alertdialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent intent = new Intent(UserLocation2.this, EmailActivity.class);
-                                startActivity(intent);
-                            }
-                        });
-                        alertdialog.setTitle("EMAIL ERROR");
-                        alertdialog.setMessage("LOOKS LIKE YOU FORGOT TO REGISTER A TRUSTED EMAIL WITH US");
-                        alertdialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-
-                        alertdialog.show();
 
                     }
-
-
+                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                 }
-                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
             }
@@ -639,17 +709,21 @@ public class UserLocation2 extends AppCompatActivity {
 
         mapView = (MapView) findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 map = mapboxMap;
             }
         });
+       //TODO CHANGE MAP STYLE BASE ON PREFERENCE
+        mapView.setStyleUrl(mSharedPreferences.getString("map_style",""));
 
          floatingActionButton = (FloatingActionButton) findViewById(R.id.location_toggle_fab);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ++locate_count;
                 if (map != null) {
 
                     toggleGps(!map.isMyLocationEnabled());
@@ -663,6 +737,7 @@ public class UserLocation2 extends AppCompatActivity {
 
     @Override
     public void onResume() {
+
         mapView.onResume();
         super.onResume();
 
@@ -827,7 +902,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
         //Creating SendMail object
-        SendMail1 sm = new SendMail1(this, email, subject, message);
+        SendMail2 sm = new SendMail2(this, email, subject, message);
 
         //Executing sendmail to send email
         sm.execute();
@@ -883,7 +958,7 @@ public class UserLocation2 extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case 1:
-                Intent intent1 = new Intent(UserLocation2.this, ShortcutKeys.class);
+                Intent intent1 = new Intent(UserLocation2.this, MainDashBoard.class);
                 startActivity(intent1);
                 break;
             case 2:
@@ -902,21 +977,7 @@ public class UserLocation2 extends AppCompatActivity {
                 Intent intent5 = new Intent(UserLocation2.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
-            case 6:
-                LayoutInflater li = LayoutInflater.from(context);
-                View devView = li.inflate(R.layout.about_developer_dialog, null);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setView(devView);
-
-
-                builder.setCancelable(false).setPositiveButton("GREAT!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
 
         }
 
@@ -1152,25 +1213,29 @@ public class UserLocation2 extends AppCompatActivity {
                                     Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
                             startActivity(intent);
                         }
-                    }).show();
+                    });
 
                     builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
-                    }).show();
+                    });
+
+                    builder.show();
 
                 }catch(Exception exc){
                     AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
                     dialog.setTitle("ERROR");
-                    dialog.setMessage("Click On The Circular Locate Butotn before Finding Nearest ATM");
+                    dialog.setMessage("Click On The Circular Locate Button Before Finding Nearest Landmark");
                     dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
-                    }).show();
+                    });
+
+                    dialog.show();
                 }
 
 
@@ -1324,25 +1389,28 @@ public class UserLocation2 extends AppCompatActivity {
                                 Uri.parse("http://maps.google.com/maps?saddr=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  "&daddr=" + String.valueOf(lat) + "," + String.valueOf(lng)));
                         startActivity(intent);
                     }
-                }).show();
+                });
 
                 builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
-                }).show();
+                });
+                builder.show();
 
             }catch(Exception exc){
                 AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
                 dialog.setTitle("ERROR");
-                dialog.setMessage("Click On The Circular Locate Butotn before Finding Nearest ATM");
+                dialog.setMessage("Click On The Circular Locate Button Before Finding Nearest Landmark");
                 dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
-                }).show();
+                });
+
+                dialog.show();
             }
 
 
@@ -1351,6 +1419,7 @@ public class UserLocation2 extends AppCompatActivity {
 
         }
     }
+
 
 }
 

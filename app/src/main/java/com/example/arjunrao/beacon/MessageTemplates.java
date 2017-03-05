@@ -70,7 +70,7 @@ public class MessageTemplates extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_helpline1,"Helplines and Tips"),
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
                 new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
-                new Navigation_Drawer(R.drawable.nav_developer,"Developer")
+
 
         };
 
@@ -123,7 +123,7 @@ public class MessageTemplates extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case 1:
-                Intent intent1 = new Intent(MessageTemplates.this, ShortcutKeys.class);
+                Intent intent1 = new Intent(MessageTemplates.this, MainDashBoard.class);
                 startActivity(intent1);
                 break;
             case 2:
@@ -142,21 +142,6 @@ public class MessageTemplates extends AppCompatActivity {
                 Intent intent5 = new Intent(MessageTemplates.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
-            case 6:
-                LayoutInflater li = LayoutInflater.from(context);
-                View devView = li.inflate(R.layout.about_developer_dialog, null);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setView(devView);
-
-
-                builder.setCancelable(false).setPositiveButton("GREAT!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
 
         }
 

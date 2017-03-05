@@ -16,11 +16,11 @@ public class Card_data {
 
     public static final Card_data[] data = {
             new Card_data("Trusted Contacts",R.drawable.trusted_contacts),
-            new Card_data("Shortcut Keys",R.drawable.shortcut_key),
-            new Card_data("Email & SMS",R.drawable.email),
-            new Card_data("Sound & Notifications",R.drawable.settings),
-            new Card_data("Location Settings",R.drawable.location),
-            new Card_data("About Developer",R.drawable.developer)
+            new Card_data("Emergency Settings",R.drawable.shortcut_key),
+            new Card_data("Register Email",R.drawable.email),
+            new Card_data("Message Templates",R.drawable.dash_template),
+            new Card_data("Your Location",R.drawable.location),
+            //new Card_data("About Developer",R.drawable.developer)
     };
             public String getName(){
                 return name;
