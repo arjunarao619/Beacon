@@ -45,13 +45,12 @@
         android:src="@drawable/delete_contact1"
         app:backgroundTint="#004D40"
         />
-    <android.support.v7.widget.RecyclerView
-        android:id = "@+id/contact_list"
-        android:layout_width = "match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+   <ListView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:dividerHeight="2dp"
+       android:id = "@+id/contact_list"
+       android:textAlignment="textStart"/>
 
 
 </RelativeLayout>

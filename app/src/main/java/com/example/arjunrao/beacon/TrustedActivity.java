@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -23,10 +24,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TrustedActivity extends AppCompatActivity {
 
@@ -63,6 +68,7 @@ public class TrustedActivity extends AppCompatActivity {
     public FloatingActionButton fab;
     String[] contact_numbers;
     int images[];
+     FloatingActionButton delete;
     ImageView contact_pic;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,16 +124,11 @@ public class TrustedActivity extends AppCompatActivity {
         Beacon_Database beacon_database = new Beacon_Database(this);
         db = beacon_database.getReadableDatabase();
 
-        RecyclerView contactRecycler = (RecyclerView) findViewById(R.id.contact_list);
-        contactRecycler.setHasFixedSize(true);
+        noContacts = (TextView) findViewById(R.id.nocontacts);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(TrustedActivity.this);
-        contactRecycler.setLayoutManager(layoutManager);
-        contactRecycler.setItemAnimator(new DefaultItemAnimator());
-
-
-
-
+        fab = (FloatingActionButton) findViewById(R.id.create_contact);
+        delete = (FloatingActionButton) findViewById(R.id.delete_contact);
+        delete.setVisibility(View.GONE);
 
         // Initiating a cursor to the database*/
 
@@ -142,10 +143,10 @@ public class TrustedActivity extends AppCompatActivity {
             contactNameCursor.moveToFirst();
             contact_names = new String[contactNameCursor.getCount()];
             contact_numbers = new String[contactNameCursor.getCount()];
-            images = new int[contactNameCursor.getCount()];
 
 
-            noContacts = (TextView) findViewById(R.id.nocontacts);
+
+
             noContacts.setVisibility(View.GONE);
 
             for(int i = 0;i<contactNameCursor.getCount();i++){
@@ -156,37 +157,55 @@ public class TrustedActivity extends AppCompatActivity {
                // numberCursor.moveToNext();
             }
 
+            final ArrayList<String> contacts = new ArrayList<String>(Arrays.asList(contact_names));
+            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,contacts);
+
+            ListView listView = (ListView) findViewById(R.id.contact_list);
 
 
-          for(int i = 0;i<contactNameCursor.getCount();i++){
-                images[i] = Hardcoded_contacts.contacts[i].getImageResourceId();
-            }
+
+
+            listView.setAdapter(adapter);
+
+          listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+              @Override
+              public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
+                  fab.setVisibility(View.GONE);
+                  delete.setVisibility(View.VISIBLE);
+                  view.setBackgroundColor(Color.parseColor("#757575"));
+                    final String item = contacts.get(position);
+
+                  delete.setOnClickListener(new View.OnClickListener() {
+                      @Override
+                      public void onClick(View v) {
+                         contacts.remove(position);
+                          adapter.notifyDataSetChanged();
+                          delete.setVisibility(View.GONE);
+                          fab.setVisibility(View.VISIBLE);
+                          view.setBackgroundColor(Color.parseColor("#ffffff"));
+
+                          db.delete("CONTACTS","NAME = ?",new String[]{item});
+                          if(contacts.size() == 0){
+                              noContacts.setVisibility(View.VISIBLE);
+                          }else noContacts.setVisibility(View.GONE);
+
+                      }
+                  });
+
+                  return true;
+              }
+          });
 
 
 
-            MyAdapter adapter = new MyAdapter(contact_names,contact_numbers,images);
-            contactRecycler.setAdapter(adapter);
-          /*  adapter.setListener(new MyAdapter.Listener() {
-                @Override
-                public void onLongClick(int position) {
-                    fab = (FloatingActionButton) findViewById(R.id.create_contact);
-                    fab.setVisibility(View.GONE);
-                    FloatingActionButton delete_contact = (FloatingActionButton) findViewById(R.id.delete_contact);
-                    delete_contact.setVisibility(View.VISIBLE);
 
-                    delete_contact.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //TODO
-                        }
-                    });
 
-                }
-            });*/
+
+
 
         }
         if (!contactNameCursor.moveToFirst()){
-            //user does not have any contacts stored yet
+            noContacts.setVisibility(View.VISIBLE);
         }
 
 
@@ -199,7 +218,7 @@ public class TrustedActivity extends AppCompatActivity {
 
 
 
-         fab = (FloatingActionButton) findViewById(R.id.create_contact);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -376,6 +395,26 @@ public class TrustedActivity extends AppCompatActivity {
                 startActivity(intent);
         }
         return true;
+    }
+
+
+    @Override
+    public void onBackPressed(){
+        if(delete.getVisibility() == View.VISIBLE){
+           fab.setVisibility(View.VISIBLE);
+            delete.setVisibility(View.GONE);
+
+            changeListColour(true);
+        }
+
+        else {
+            startActivity(new Intent(TrustedActivity.this,UserLocation2.class));
+        }
+    }
+
+    public boolean changeListColour(boolean isChange){
+        if(isChange)return true;
+        else return false;
     }
 
 
