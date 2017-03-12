@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,7 +25,10 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -32,6 +36,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -41,6 +46,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,11 +77,13 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     protected LocationManager locationManager;
     String[] numbers = new String[10];
     private AudioManager myAudioManager;
+    String user_name;
 
 
 
     private static final long MIN_DISTANCE_FOR_UPDATE = 10;
     private static final long MIN_TIME_FOR_UPDATE = 1000 * 60 * 2;
+    public static final String BROADCAST = "com.example.arjunrao.beacon.android.action.ShutDownReciever";
 
 
     @Nullable
@@ -104,12 +112,13 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     @Override
     public void onCreate() {
         // TODO Auto-generated method stub
+
         Toast.makeText(getApplicationContext(), "The Beacon Service Has Started", Toast.LENGTH_LONG).show();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
       is_alert = preferences.getBoolean("location",false);
         is_alarm = preferences.getBoolean("alarm",false);
-        is_record = preferences.getBoolean("record",false);
-
+       /* is_record = preferences.getBoolean("record",false);*/
+         user_name = preferences.getString("user_name","Someone");
 
 
 
@@ -126,9 +135,9 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
         float accelationSquareRoot = (x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         long actualTime = System.currentTimeMillis();
-        if (accelationSquareRoot >= 7) //
+        if (accelationSquareRoot >= 21) //
         {
-            if (actualTime - lastUpdate < 2000) {
+            if (actualTime - lastUpdate < 1000) {
                 return;
             }
             lastUpdate = actualTime;
@@ -139,9 +148,10 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
 
                 if(is_alert){
-                    Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
-                    v.vibrate(1000);
                     mGoogleApiClient.connect();
+                    Vibrator v = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
+                    v.vibrate(3000);
+
                 }
             if(is_alarm){
                 mediaPlayer = MediaPlayer.create(ShakeService1.this,R.raw.panic);
@@ -151,20 +161,23 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                 mediaPlayer.start();
             }
 
-            if(is_record){
-                //TODO RECORD AUDIO
-            }
+        /*    if(is_record){
+                String fileName = "EMERGENCY_LOG";
+                MediaRecorder myAudioRecorder = new MediaRecorder();
+                myAudioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                myAudioRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                myAudioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+                myAudioRecorder.setMaxDuration(30000);
 
+                myAudioRecorder.setOutputFile( "/sdcard/sound/" + fileName);
+                try{
+                    myAudioRecorder.prepare();
+                    myAudioRecorder.start();
+                }catch(Exception exc){
+                    Toast.makeText(ShakeService1.this,"Audio Recorder Not Responing",Toast.LENGTH_LONG).show();
+                }
 
-
-
-
-
-
-
-
-
-
+            }*/
 
 
             ///////////////////////////////////////////////////////
@@ -263,14 +276,48 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                 //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
 
-            final String EMAIL_MESSAGE ="Your Trusted Contact Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-            Beacon_Database dbHelper = new Beacon_Database(this);
+            final String EMAIL_MESSAGE = user_name + "Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+            final String SMS_MESSAGE = user_name + "Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " Check Email For Address";
+        Beacon_Database dbHelper = new Beacon_Database(this);
             db = dbHelper.getReadableDatabase();
+
+            Beacon_Database helper = new Beacon_Database(this);
+            contactDb = helper.getReadableDatabase();
+
+
             cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
             if(cursor.moveToFirst()){
                 cursor.moveToFirst();
                 SENDTOTHISEMAIL = cursor.getString(0);
-                final SmsManager smsManager = SmsManager.getDefault();
+
+                //SmsManager sm = SmsManager.getDefault();
+                contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
+
+                Cursor countCursor;
+                countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
+                if(contactCursor.moveToFirst())
+                    contactCursor.moveToFirst();
+                    countCursor.moveToFirst();
+                    final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
+
+
+
+                    //retrieving each contact number
+                    for(int i=0;i<no_of_contacts;i++){
+                        numbers[i] = contactCursor.getString(1);
+                        SmsManager sm = SmsManager.getDefault();
+                        sm.sendTextMessage ( numbers[i], null, SMS_MESSAGE, null, null);
+                        contactCursor.moveToNext();
+                    }
+
+
+
+
+
+
+
+
+
 
                 sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
             }
@@ -279,7 +326,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
 
 
 
-
+        mGoogleApiClient.disconnect();
 
 
     }

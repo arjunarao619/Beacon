@@ -29,35 +29,15 @@
 </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="AUDIO RECORDING">
-
-        <CheckBoxPreference
-            android:title="Record Audio On Shake"
-            android:key = "record"
-            android:icon="@drawable/record_settings"
-            android:defaultValue="false"
-            android:summary="Record Audio For Two Minutes On Phone Shake"/>
-
-
-    </PreferenceCategory>
-    <PreferenceCategory
         android:title="MESSAGE SETTINGS"
         >
 
         <EditTextPreference
             android:icon="@drawable/user_preference"
-            android:title="User Name(Optional)"
+            android:title="User Name"
             android:defaultValue="Beacon User"
             android:summary="This Name Will Be Used In All Alerts"
             android:key = "user_name"/>
-
-        <SwitchPreference
-            android:icon="@drawable/yes_sms"
-            android:title="Send SMS"
-            android:key = "sms"
-            android:defaultValue="true"
-            android:summary="Enable Or Disable SMS Sending"
-            />
 
         <Preference
             android:title="Edit Email"
@@ -77,15 +57,19 @@
             android:entries="@array/style_names"
             android:entryValues="@array/style_values"
             android:dialogTitle="Select Map Theme"
-            android:defaultValue="@string/dark"/>
+            android:defaultValue="2"/>
     </PreferenceCategory>
+
     <PreferenceCategory
-        android:title="OTHERS">
+        android:title="DEVELOPER">
+
         <Preference
-            android:key = "legal"
-            android:title="Legal"/>
+            android:title="About Developer"
+            android:icon = "@drawable/developer"
+            android:key = "about_dev"/>
 
     </PreferenceCategory>
+
 
 
 

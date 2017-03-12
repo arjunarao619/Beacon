@@ -33,7 +33,7 @@
             android:textColor="#FFFFFF"
             android:paddingLeft="@dimen/desc_padding"
             android:paddingRight="@dimen/desc_padding"
-            android:text = "Select from a  list of helplines and emergency numbers In your country"
+            android:text = "Police Station, Hospital, ATM? Beacon Navigates You instantly"
             android:textAlignment = "center"
             android:textSize = "@dimen/slide_desc"/>
     </LinearLayout>

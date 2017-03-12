@@ -55,7 +55,7 @@ public class EmailActivity extends AppCompatActivity {
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$";
     private Pattern pattern = Pattern.compile(EMAIL_PATTERN);
     private Matcher matcher; //validate email
-    private final String EMAIL_MESSAGE = "Your Email Address Has been successfully set up! \n \n \n Your Email ID can be used in Case Of Any Emergency, To Contact Your Trusted Contacts  \n \n \n Now, You May Be Able To Send Email Alerts In case of an Emergency \n \n \n *This is just a test Email. Please Do not Reply* ";
+    private final String EMAIL_MESSAGE = "This Email Has Been Chosen As A Trusted Email \n \n \n All location and emergency notifications will be sent to this email.  \n \n \n Email Alerts Have Been Successfully Set up. \n \n \n *This is just a test Email. Please Do not Reply* ";
     SQLiteDatabase db;
     private Cursor cursor;
     ImageButton email_validate;
@@ -98,11 +98,11 @@ public class EmailActivity extends AppCompatActivity {
 
                 new Navigation_Drawer(R.drawable.nav_location1,"Your Location"),
 
-                new Navigation_Drawer(R.drawable.nav_helpline1,"Helplines and Tips"),
+
 
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
 
-                new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
+                new Navigation_Drawer(R.drawable.nav_message1,"Email"),
 
 
 
@@ -288,15 +288,12 @@ public class EmailActivity extends AppCompatActivity {
                 Intent intent2 = new Intent(EmailActivity.this, UserLocation2.class);
                 startActivity(intent2);
                 break;
+
             case 3:
-                Intent intent3 = new Intent(EmailActivity.this, HelpLineActivity.class);
-                startActivity(intent3);
-                break;
-            case 4:
                 Intent intent4 = new Intent(EmailActivity.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
-            case 5:
+            case 4:
                 Intent intent5 = new Intent(EmailActivity.this,EmailActivity.class);
                 startActivity(intent5);
                 break;

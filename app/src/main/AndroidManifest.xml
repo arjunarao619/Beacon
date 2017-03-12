@@ -17,7 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <service android:name=".ShakeService1" />
-
+        <receiver android:name=".ShutDownReciever">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
+            </intent-filter> </receiver>
         <activity
             android:name=".WelcomeActivity"
             android:screenOrientation="portrait"
@@ -60,22 +64,7 @@
             android:label="@string/title_activity_notifications"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".HelpLineActivity"
-            android:label="@string/title_activity_help_line"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".HelpLines.India" />
-        <activity android:name=".HelpLines.usa" />
-        <activity android:name=".HelpLines.France" />
-        <activity android:name=".HelpLines.Germany" />
-        <activity android:name=".HelpLines.UK" />
-        <activity android:name=".HelpLines.Russia" />
-        <activity android:name=".HelpLines.China" />
-        <activity android:name=".HelpLines.Spain" />
-        <activity
-            android:name=".User_Name"
-            android:noHistory="true" />
+
         <activity
             android:name=".SplashScreenActivity"
             android:noHistory="true"
@@ -87,8 +76,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Legal" />
-        <activity android:name=".HelpLines"></activity>
     </application>
 
 </manifest>

@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
 
     android:background="#00695C"
-    tools:context="com.example.arjunrao.locationbroadcaster.EmailActivity">
+    tools:context="com.example.arjunrao.beacon.EmailActivity">
 
 
 
@@ -77,18 +77,17 @@
             android:layout_marginTop="15dp"
             android:contentDescription="" />
 
-        <android.support.v7.widget.SwitchCompat
-            android:layout_height="75dp"
-            android:layout_width="309dp"
-            android:checked="false"
-            android:theme = "@style/MySwitch"
-            android:layout_gravity="top|center"
-            android:paddingTop="16dp"
-            android:text="Email Configuration   "
-            android:textSize="25sp"
-            android:id="@+id/switchCompat">
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text = "Email Configuration"
+          android:layout_gravity="top|center"
+          android:textColor="#212121"
+          android:textSize="25sp"
+          android:textAlignment="center"
+          android:paddingTop="32dp"/>
 
-        </android.support.v7.widget.SwitchCompat>
+
 
 
     </FrameLayout>

@@ -63,18 +63,33 @@ public class MainDashBoard extends PreferenceActivity implements SharedPreferenc
             }
         });
 
-        Preference myPref2 = (Preference) findPreference("legal");
-        myPref2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        Preference myPref10 = (Preference) findPreference("about_dev");
+        myPref10.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainDashBoard.this);
+                builder.setTitle("Developer");
+                builder.setMessage("NAME : Arjun Rao \n EMAIL : arjunarao619@gmail.com");
+                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
+                builder.show();
                 return true;
             }
         });
 
 
 
+
+
         ListPreference styles = (ListPreference) findPreference("map_style");
-        styles.setValueIndex(2);
+        if(styles.getValue() == null){
+            styles.setValueIndex(2);
+        }
+
 
 
     }
@@ -87,11 +102,7 @@ public class MainDashBoard extends PreferenceActivity implements SharedPreferenc
             // Set summary to be the user-description for the selected value
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
-        if (key.equals("sms")) {
-            Preference connectionPref = findPreference(key);
-            // Set summary to be the user-description for the selected value
-            connectionPref.setSummary(sharedPreferences.getString(key, ""));
-        }
+
         if (key.equals("map_style")) {
             Preference connectionPref = findPreference(key);
             // Set summary to be the user-description for the selected value
@@ -105,6 +116,7 @@ public class MainDashBoard extends PreferenceActivity implements SharedPreferenc
 
         if (key.equals("alarm")) {
             Preference connectionPref = findPreference(key);
+            connectionPref.setDefaultValue("2");
             // Set summary to be the user-description for the selected value
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
@@ -114,6 +126,7 @@ public class MainDashBoard extends PreferenceActivity implements SharedPreferenc
             // Set summary to be the user-description for the selected value
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
+
     }
 
     public void promptRestart(){
@@ -134,6 +147,7 @@ public class MainDashBoard extends PreferenceActivity implements SharedPreferenc
         alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(MainDashBoard.this,UserLocation2.class));
                 dialog.dismiss();
             }
         });

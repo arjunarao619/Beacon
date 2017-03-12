@@ -6,16 +6,20 @@
     android:layout_height="match_parent"
 
     tools:context="com.example.arjunrao.beacon.MessageTemplates"
-    android:background="#212121">
+    android:background="#004d40">
 
 
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="15dp"
+
         android:text = "Predefined SMS Message Templates"
         android:textAlignment="center"
+        android:background="#004d40"
         android:textSize="30sp"
+
         android:paddingTop="16dp"
         android:textColor="#e0e0e0"
         android:id="@+id/textView3" />
@@ -23,13 +27,11 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textView3"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="56dp"
         android:entries="@array/messages"
         android:background="#e0e0e0"
         android:id = "@+id/messageList"
-         />
+        android:layout_below="@+id/textView3" />
 
 
 </RelativeLayout>

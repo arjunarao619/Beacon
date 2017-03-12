@@ -123,9 +123,10 @@ public class UserLocation2 extends AppCompatActivity {
 
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
-    private ShakeDetector mShakeDetector;
+
     GoogleApiClient mGoogleApiClient;
     SharedPreferences mSharedPreferences;
+    public static final int RECORD_AUDIO = 0;
 
 
     @Override
@@ -156,18 +157,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager
-                .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
 
-            @Override
-            public void onShake(int count) {
-
-                Toast.makeText(UserLocation2.this,"Shake Shake",Toast.LENGTH_LONG).show();
-            }
-        });
 
          mediaPlayer = MediaPlayer.create(UserLocation2.this,R.raw.panic);
         myAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -191,7 +181,7 @@ public class UserLocation2 extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_contacts1, "Trusted Contacts"),
                 new Navigation_Drawer(R.drawable.nav_emergency1, "Emergency Settings"),
                 new Navigation_Drawer(R.drawable.nav_location1, "Your Location"),
-                new Navigation_Drawer(R.drawable.nav_helpline1, "Helplines and Tips"),
+
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
                 new Navigation_Drawer(R.drawable.nav_message1, "Email and SMS"),
 
@@ -446,8 +436,8 @@ public class UserLocation2 extends AppCompatActivity {
                         } else {
                             AlertDialog.Builder alertdialog = new AlertDialog.Builder(UserLocation2.this);
                             alertdialog.setTitle("EMAIL ERROR");
-                            alertdialog.setMessage("LOOKS LIKE YOU FORGOT TO REGISTER A TRUSTED EMAIL WITH US");
-                            alertdialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
+                            alertdialog.setMessage("Looks Like You Forgot To Register A Trusted Email With Us. Register Now?");
+                            alertdialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Intent intent = new Intent(UserLocation2.this, EmailActivity.class);
@@ -566,7 +556,7 @@ public class UserLocation2 extends AppCompatActivity {
                             contactDb = contactHelper.getReadableDatabase();
 
 
-                            if (mSharedPreferences.getBoolean("sms", true)) {
+
                                 contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
 
                                 Cursor countCursor;
@@ -609,11 +599,11 @@ public class UserLocation2 extends AppCompatActivity {
                                 }
 
 
-                                sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
+                                sendEmail(SENDTOTHISEMAIL, "PANIC BUTTON ACTIVATED", EMAIL_MESSAGE);
                                 EMAIL_SUCCESS = true;
 
-                            }
-                            else if(!contactCursor.moveToFirst()){
+
+                             if(!contactCursor.moveToFirst()){
                                 mediaPlayer.stop();
                                 panicStop.setVisibility(View.GONE);
                                 panicButton.setVisibility(View.VISIBLE);
@@ -887,8 +877,8 @@ public class UserLocation2 extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
                         && (ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
-                       /* || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED)*/ {
+                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(UserLocation2.this, android.Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED)) {
                     Intent serviceIntent = new Intent(UserLocation2.this,ShakeService1.class);
                     startService(serviceIntent);
                 }
@@ -965,15 +955,12 @@ public class UserLocation2 extends AppCompatActivity {
                 Intent intent2 = new Intent(UserLocation2.this, UserLocation2.class);
                 startActivity(intent2);
                 break;
+
             case 3:
-                Intent intent3 = new Intent(UserLocation2.this, HelpLineActivity.class);
-                startActivity(intent3);
-                break;
-            case 4:
                 Intent intent4 = new Intent(UserLocation2.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
-            case 5:
+            case 4:
                 Intent intent5 = new Intent(UserLocation2.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
@@ -1033,8 +1020,8 @@ public class UserLocation2 extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + latitude + "," + longitude);
-        sb.append("&radius=2000");
-        sb.append("&types=" + "doctor");
+        sb.append("&radius=15000");
+        sb.append("&types=" + "hospital");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
 
@@ -1050,7 +1037,7 @@ public class UserLocation2 extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + latitude + "," + longitude);
-        sb.append("&radius=2000");
+        sb.append("&radius=15000");
         sb.append("&types=" + "atm");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");
@@ -1067,7 +1054,7 @@ public class UserLocation2 extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + latitude + "," + longitude);
-        sb.append("&radius=2000");
+        sb.append("&radius=15000");
         sb.append("&types=" + "police");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyA6t4OHbEb42Tnq0KD_3wa26TqPi98J_yA");

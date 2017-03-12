@@ -67,9 +67,9 @@ public class MessageTemplates extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_contacts1,"Trusted Contacts"),
                 new Navigation_Drawer(R.drawable.nav_emergency1,"Emergency Settings"),
                 new Navigation_Drawer(R.drawable.nav_location1,"Your Location"),
-                new Navigation_Drawer(R.drawable.nav_helpline1,"Helplines and Tips"),
+
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
-                new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
+                new Navigation_Drawer(R.drawable.nav_message1,"Email"),
 
 
         };
@@ -130,15 +130,12 @@ public class MessageTemplates extends AppCompatActivity {
                 Intent intent2 = new Intent(MessageTemplates.this, UserLocation2.class);
                 startActivity(intent2);
                 break;
+
             case 3:
-                Intent intent3 = new Intent(MessageTemplates.this, HelpLineActivity.class);
-                startActivity(intent3);
-                break;
-            case 4:
                 Intent intent4 = new Intent(MessageTemplates.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
-            case 5:
+            case 4:
                 Intent intent5 = new Intent(MessageTemplates.this,EmailActivity.class);
                 startActivity(intent5);
                 break;

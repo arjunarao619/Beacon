@@ -88,10 +88,10 @@ public class TrustedActivity extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_contacts1,"Trusted Contacts"),
                 new Navigation_Drawer(R.drawable.nav_emergency1,"Emergency Settings"),
                 new Navigation_Drawer(R.drawable.nav_location1,"Your Location"),
-                new Navigation_Drawer(R.drawable.nav_helpline1,"Helplines and Tips"),
+
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
-                new Navigation_Drawer(R.drawable.nav_message1,"Email and SMS"),
-                new Navigation_Drawer(R.drawable.nav_developer,"Developer")
+                new Navigation_Drawer(R.drawable.nav_message1,"Email"),
+
 
         };
 
@@ -316,33 +316,16 @@ public class TrustedActivity extends AppCompatActivity {
                 Intent intent2 = new Intent(TrustedActivity.this, UserLocation2.class);
                 startActivity(intent2);
                 break;
+
             case 3:
-                Intent intent3 = new Intent(TrustedActivity.this, HelpLineActivity.class);
-                startActivity(intent3);
-                break;
-            case 4:
                 Intent intent4 = new Intent(TrustedActivity.this, MessageTemplates.class);
                 startActivity(intent4);
                 break;
-            case 5:
+            case 4:
                 Intent intent5 = new Intent(TrustedActivity.this,EmailActivity.class);
                 startActivity(intent5);
                 break;
-            case 6:
-                LayoutInflater li = LayoutInflater.from(context);
-                View devView = li.inflate(R.layout.about_developer_dialog, null);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setView(devView);
-
-
-                builder.setCancelable(false).setPositiveButton("GREAT!", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.show();
 
         }
 
