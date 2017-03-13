@@ -4,8 +4,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/tools"
 
-    android:id = "@+id/content_trusted"
+    android:id="@+id/content_trusted"
     android:background="#ffffff">
 
     <TextView
@@ -29,6 +30,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:paddingBottom="48dp"
+
         android:src="@drawable/add_contact1"
         app:backgroundTint="#004D40"
         />
@@ -51,6 +53,7 @@
        android:dividerHeight="2dp"
        android:id = "@+id/contact_list"
        android:textAlignment="textStart"/>
+
 
 
 </RelativeLayout>

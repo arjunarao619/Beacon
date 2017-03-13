@@ -32,7 +32,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.arjunrao.locationbroadcaster.TrustedActivity">
+    tools:context="com.arjunarao.arjunrao.locationbroadcaster.TrustedActivity">
 
 
 
@@ -44,5 +44,7 @@
 
 
 </android.support.design.widget.CoordinatorLayout>
+
+
 </android.support.v4.widget.DrawerLayout>
 

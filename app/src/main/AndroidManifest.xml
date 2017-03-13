@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.arjunrao.beacon">
+    package="com.arjunarao.arjunrao.beacon">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,30 +9,31 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/main_logo"
+        android:icon="@drawable/main_logo1"
         android:label="Beacon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <service android:name=".ShakeService1" />
-        <receiver android:name=".ShutDownReciever">
+        <service android:name="com.arjunarao.arjunrao.beacon.ShakeService1" />
+        <receiver android:name="com.arjunarao.arjunrao.beacon.ShutDownReciever">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
                 <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
             </intent-filter> </receiver>
         <activity
-            android:name=".WelcomeActivity"
+            android:name="com.arjunarao.arjunrao.beacon.WelcomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MainDashBoard"
+            android:name="com.arjunarao.arjunrao.beacon.MainDashBoard"
             android:label="Settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".TrustedActivity"
+            android:name="com.arjunarao.arjunrao.beacon.TrustedActivity"
             android:label="Your Trusted Contacts"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -50,23 +51,23 @@
         <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
 
         <activity
-            android:name=".UserLocation2"
+            android:name="com.arjunarao.arjunrao.beacon.UserLocation2"
             android:label="Your Location"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".EmailActivity"
+            android:name="com.arjunarao.arjunrao.beacon.EmailActivity"
             android:label="@string/title_activity_email"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".MessageTemplates"
+            android:name="com.arjunarao.arjunrao.beacon.MessageTemplates"
             android:label="@string/title_activity_notifications"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
         <activity
-            android:name=".SplashScreenActivity"
+            android:name="com.arjunarao.arjunrao.beacon.SplashScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

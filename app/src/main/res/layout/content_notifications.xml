@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_notifications"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="com.example.arjunrao.beacon.MessageTemplates"
+    tools:context="com.arjunarao.arjunrao.beacon.MessageTemplates"
     android:background="#004d40">
 
 
@@ -33,5 +34,15 @@
         android:id = "@+id/messageList"
         android:layout_below="@+id/textView3" />
 
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="LARGE_BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id">
+    </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>
