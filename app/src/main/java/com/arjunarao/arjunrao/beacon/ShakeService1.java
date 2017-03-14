@@ -247,7 +247,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                 //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
 
-            final String EMAIL_MESSAGE = user_name + " Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+            final String EMAIL_MESSAGE = user_name + " Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + " \n" + "Location Details : " + "Address : " + address;
             final String SMS_MESSAGE = user_name + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " Check Email For Address";
         Beacon_Database dbHelper = new Beacon_Database(this);
             db = dbHelper.getReadableDatabase();

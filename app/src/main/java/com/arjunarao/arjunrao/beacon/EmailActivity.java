@@ -81,18 +81,13 @@ public class EmailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_email);
 //ads
         MobileAds.initialize(getApplicationContext(), " ca-app-pub-4743417374008047~1985331413");
-        final TelephonyManager tm =(TelephonyManager)getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-
-        final String deviceid = tm.getDeviceId();
 
 
         //banner ad
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest request = new AdRequest.Builder()
-                      // All emulators
-                .addTestDevice(deviceid)  // An example device ID
-                .build();
+        AdRequest request = new AdRequest.Builder().build();
+
         mAdView.loadAd(request);
         //done with banner
 
