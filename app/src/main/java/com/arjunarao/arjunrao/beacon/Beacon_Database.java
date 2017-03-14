@@ -21,10 +21,6 @@ public class Beacon_Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String table_user_info = "CREATE TABLE LOGIN(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "NAME TEXT, "
-                + "EMAIL TEXT);";
-        db.execSQL(table_user_info);
 
         String email_table= "CREATE TABLE USEREMAIL(_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "USER_EMAIL TEXT);";

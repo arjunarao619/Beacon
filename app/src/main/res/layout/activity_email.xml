@@ -12,7 +12,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-    android:background="#004D40"
+        android:background="#004D40"
         android:layout_height="match_parent"
         android:id = "@+id/content_frame"/>
 

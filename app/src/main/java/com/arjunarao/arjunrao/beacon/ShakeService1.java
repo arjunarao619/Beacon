@@ -61,7 +61,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private static final int PERMISSIONS_LOCATION = 0;
-    double latitude,longitude,altitude;
+    double latitude,longitude,altitude,speed;
     protected LocationManager locationManager;
     String[] numbers = new String[10];
     private AudioManager myAudioManager;
@@ -219,6 +219,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
+            speed = location.getSpeed();
 
 
 
@@ -247,7 +248,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
                 //startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
             }
 
-            final String EMAIL_MESSAGE = user_name + " Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + " \n" + "Location Details : " + "Address : " + address;
+            final String EMAIL_MESSAGE = user_name + " Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + " \n" + "Location Details : " + "Address : " + address + "\n Altitude : " + altitude + " Speed : " + speed;
             final String SMS_MESSAGE = user_name + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " Check Email For Address";
         Beacon_Database dbHelper = new Beacon_Database(this);
             db = dbHelper.getReadableDatabase();
@@ -256,42 +257,34 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             contactDb = helper.getReadableDatabase();
 
 
-            cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
-            if(cursor.moveToFirst()){
-                cursor.moveToFirst();
-                SENDTOTHISEMAIL = cursor.getString(0);
+
 
                 //SmsManager sm = SmsManager.getDefault();
                 contactCursor = contactDb.query("CONTACTS",new String[] {"NAME","NUMBER"},null,null,null,null,null);
 
                 Cursor countCursor;
                 countCursor = contactDb.query("CONTACTS",new String[]{"NUMBER","COUNT (_id) AS count"},null,null,null,null,null);
-                if(contactCursor.moveToFirst())
+                if(contactCursor.moveToFirst()) {
                     contactCursor.moveToFirst();
                     countCursor.moveToFirst();
                     final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
 
 
-
                     //retrieving each contact number
-                    for(int i=0;i<no_of_contacts;i++){
+                    for (int i = 0; i < no_of_contacts; i++) {
                         numbers[i] = contactCursor.getString(1);
                         SmsManager sm = SmsManager.getDefault();
-                        sm.sendTextMessage ( numbers[i], null, SMS_MESSAGE, null, null);
+                        sm.sendTextMessage(numbers[i], null, SMS_MESSAGE, null, null);
                         contactCursor.moveToNext();
                     }
+                }
 
-
-
-
-
-
-
-
-
-
-                sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
-            }
+        cursor = db.query("USEREMAIL", new String[]{"USER_EMAIL"}, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            SENDTOTHISEMAIL = cursor.getString(0);
+            sendEmail(SENDTOTHISEMAIL, "EMERGENCY MODE ACTIVATED", EMAIL_MESSAGE);
+        }
 
 
 
