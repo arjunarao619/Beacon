@@ -85,7 +85,7 @@ public class MessageTemplates extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_location1,"Your Location"),
 
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
-                new Navigation_Drawer(R.drawable.nav_message1,"Email"),
+                new Navigation_Drawer(R.drawable.nav_message1,"Edit Email"),
 
 
         };

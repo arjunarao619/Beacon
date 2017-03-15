@@ -132,7 +132,7 @@ public class EmailActivity extends AppCompatActivity {
 
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
 
-                new Navigation_Drawer(R.drawable.nav_message1,"Email"),
+                new Navigation_Drawer(R.drawable.nav_message1,"Edit Email"),
 
 
 
@@ -260,13 +260,20 @@ public class EmailActivity extends AppCompatActivity {
 
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(EmailActivity.this);
                         alertDialog.setTitle("SUCCESS");
-                        alertDialog.setMessage("EMAIL HAS BEEN SET UP. RETURNING...");
-                        alertDialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
+                        alertDialog.setMessage("Email has been successfully set up.Return? ");
+                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                                 Intent intent = new Intent(EmailActivity.this, UserLocation2.class);
                                 startActivity(intent);
+                            }
+                        });
+
+                        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
                             }
                         });
                         alertDialog.show();

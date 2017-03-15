@@ -123,9 +123,9 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
         float accelationSquareRoot = (x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         long actualTime = System.currentTimeMillis();
-        if (accelationSquareRoot >= 21) //
+        if (accelationSquareRoot >= 65) //
         {
-            if (actualTime - lastUpdate < 1000) {
+            if (actualTime - lastUpdate < 3000) {
                 return;
             }
             lastUpdate = actualTime;
@@ -249,7 +249,10 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
             }
 
             final String EMAIL_MESSAGE = user_name + " Has Activated Emergency. Location Has Been Captured" + "\n" +  "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + " \n" + "Location Details : " + "Address : " + address + "\n Altitude : " + altitude + " Speed : " + speed;
-            final String SMS_MESSAGE = user_name + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " Check Email For Address";
+            final String SMS_MESSAGE = user_name + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
+
+
+
         Beacon_Database dbHelper = new Beacon_Database(this);
             db = dbHelper.getReadableDatabase();
 

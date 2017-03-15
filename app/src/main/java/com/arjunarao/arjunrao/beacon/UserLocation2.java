@@ -1,5 +1,7 @@
 package com.arjunarao.arjunrao.beacon;
 
+import android.*;
+import android.Manifest;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -150,7 +152,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_user_location2); ///////////////////////////////////////////////////////////////////////////////////////////
-        ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
+        ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.SEND_SMS}, 1001);
 
 
          mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -180,7 +182,7 @@ public class UserLocation2 extends AppCompatActivity {
                 new Navigation_Drawer(R.drawable.nav_location1, "Your Location"),
 
                 new Navigation_Drawer(R.drawable.message_template,"Message Templates"),
-                new Navigation_Drawer(R.drawable.nav_message1, "Email and SMS"),
+                new Navigation_Drawer(R.drawable.nav_message1, "Edit Email"),
 
 
         };
@@ -283,6 +285,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
                             final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
                             if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
                                     "\n" +
                                     "Location Details : Address : null")) {
@@ -300,7 +303,7 @@ public class UserLocation2 extends AppCompatActivity {
 
                             // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
 
-                            final SmsManager smsManager = SmsManager.getDefault();
+
 
 
 
@@ -319,10 +322,10 @@ public class UserLocation2 extends AppCompatActivity {
                                 final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
 
                                 //retrieving each contact number
-                                for(int i=0;i<no_of_contacts;i++){
+                             /*   for(int i=0;i<no_of_contacts;i++){
                                     numbers[i] = contactCursor.getString(1);
                                     contactCursor.moveToNext();
-                                }
+                                }*/
 
 
 
@@ -341,10 +344,13 @@ public class UserLocation2 extends AppCompatActivity {
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        for (int i = 0; i <no_of_contacts; i++) {
-                                            smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
+                                        for (int i = 0; i < no_of_contacts; i++) {
+                                            numbers[i] = contactCursor.getString(1);
+                                            SmsManager sm = SmsManager.getDefault();
+                                            sm.sendTextMessage(numbers[i], null, SMS_MESSAGE, null, null);
+                                            contactCursor.moveToNext();
                                         }
-                                    }},4500);
+                                    }},6500);
 
 
                                 sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
@@ -524,6 +530,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
                             final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
+                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
                             if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
                                     "\n" +
                                     "Location Details : Address : null")) {
@@ -545,7 +552,7 @@ public class UserLocation2 extends AppCompatActivity {
 
                             // sendEmail(SENDTOTHISEMAIL, "Location Notification", EMAIL_MESSAGE);
 
-                            final SmsManager smsManager = SmsManager.getDefault();
+
 
 
 
@@ -564,10 +571,10 @@ public class UserLocation2 extends AppCompatActivity {
                                     final int no_of_contacts = Integer.valueOf(countCursor.getString(1)); //number of rows in the cursor
 
                                     //retrieving each contact number
-                                    for(int i=0;i<no_of_contacts;i++){
+                                  /*  for(int i=0;i<no_of_contacts;i++){
                                         numbers[i] = contactCursor.getString(1);
                                         contactCursor.moveToNext();
-                                    }
+                                    }*/
 
 
 
@@ -586,9 +593,11 @@ public class UserLocation2 extends AppCompatActivity {
                                     handler.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            for (int i = 0; i <no_of_contacts; i++) {
-                                                smsManager.sendTextMessage(numbers[i], null, EMAIL_MESSAGE, null, null);
-                                                SMS_SUCCESS = true;
+                                            for (int i = 0; i < no_of_contacts; i++) {
+                                                numbers[i] = contactCursor.getString(1);
+                                                SmsManager sm = SmsManager.getDefault();
+                                                sm.sendTextMessage(numbers[i], null, SMS_MESSAGE, null, null);
+                                                contactCursor.moveToNext();
                                             }
                                         }},6500);
 
