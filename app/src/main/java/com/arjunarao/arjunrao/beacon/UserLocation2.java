@@ -285,7 +285,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
                             final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
+                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " has shared location :  \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
                             if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
                                     "\n" +
                                     "Location Details : Address : null")) {
@@ -386,7 +386,7 @@ public class UserLocation2 extends AppCompatActivity {
                             else if(!contactCursor.moveToFirst()){
                                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
                                 alertDialog.setTitle("Choose Trusted Contacts");
-                                alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.");
+                                alertDialog.setMessage("Looks Like You Forgot To Add Trusted Contacts.Do You Want To Add Them?");
                                 alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -394,14 +394,15 @@ public class UserLocation2 extends AppCompatActivity {
                                         startActivity(intent);
 
                                     }
-                                }).show();
+                                });
 
                                 alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                     }
-                                }).show();
+                                });
+                                alertDialog.show();
 
                             }
 
@@ -515,7 +516,8 @@ public class UserLocation2 extends AppCompatActivity {
                                 dialog.dismiss();
                                 startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                             }
-                        }).show();
+                        });
+                        dialog.show();
 
                     } else {
 
@@ -530,7 +532,7 @@ public class UserLocation2 extends AppCompatActivity {
 
 
                             final String EMAIL_MESSAGE ="Beacon Alert \n Name : " + mSharedPreferences.getString("user_name","Beacon_User")  + "\n http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) + "\n \n" + "Location Details : " + "Address : " + address;
-                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " Has Activated Emergency \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
+                            final String SMS_MESSAGE = mSharedPreferences.getString("user_name","Beacon_User") + " Has Activated Panic Button \n" + "http://maps.google.com/maps?q=" + String.valueOf(latitude) + "," + String.valueOf(longitude) +  " \nCheck Email For Address";
                             if (EMAIL_MESSAGE.equals("http://maps.google.com/maps?q=0.0,0.0\n" +
                                     "\n" +
                                     "Location Details : Address : null")) {
@@ -624,14 +626,15 @@ public class UserLocation2 extends AppCompatActivity {
                                         startActivity(intent);
 
                                     }
-                                }).show();
+                                });
 
                                 alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                     }
-                                }).show();
+                                });
+                                 alertDialog.show();
 
                             }
 
@@ -728,6 +731,15 @@ public class UserLocation2 extends AppCompatActivity {
                 }
             }
         });
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                floatingActionButton.performClick();
+            }
+        },500);
+
 
     }
 
