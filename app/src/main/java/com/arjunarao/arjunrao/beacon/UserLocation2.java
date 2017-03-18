@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
@@ -145,7 +146,7 @@ public class UserLocation2 extends AppCompatActivity {
         try {
             MapboxAccountManager.start(this, getString(R.string.access_token));
         } catch (Exception exc) {
-            Toast.makeText(UserLocation2.this, "Error Determining Address. Using GPS", Toast.LENGTH_LONG).show();
+            Toast.makeText(UserLocation2.this, "Error determining address. using GPS", Toast.LENGTH_LONG).show();
 
         }
 
@@ -251,7 +252,7 @@ public class UserLocation2 extends AppCompatActivity {
                 if(locate_count == 0){
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(UserLocation2.this);
                     alertDialog.setTitle("ERROR");
-                    alertDialog.setMessage("Click On The Circular Locate Button Before Sending Your Location");
+                    alertDialog.setMessage("Click on the circular locate button before sending your location");
                     alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -263,7 +264,7 @@ public class UserLocation2 extends AppCompatActivity {
                     if (!haveNetworkConnection()) {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
                         dialog.setTitle("Error");
-                        dialog.setMessage("Please Enable Network Connection");
+                        dialog.setMessage("Please enable network connection");
                         dialog.setCancelable(false);
                         dialog.setNeutralButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -639,33 +640,35 @@ public class UserLocation2 extends AppCompatActivity {
                             }
 
 
+                            else if(contactCursor.moveToFirst()){
+                                 final Handler handler = new Handler();
+                                 handler.postDelayed(new Runnable() {
+                                     @Override
+                                     public void run() {
+                                         android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
+                                         alertDialog.setTitle("Location Has Been Sent Successfully");
+                                         alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                             @Override
+                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                 dialogInterface.dismiss();
+
+                                             }
+                                         });
+
+                                         alertDialog.show();
+
+                                         try {
+                                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                             Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                             r.play();
+                                         } catch (Exception e) {
+                                             e.printStackTrace();
+                                         }
+                                     }
+                                 }, 4500);
+                             }
 
 
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    android.app.AlertDialog.Builder alertDialog = new android.app.AlertDialog.Builder(UserLocation2.this);
-                                    alertDialog.setTitle("Location Has Been Sent Successfully");
-                                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-
-                                        }
-                                    });
-
-                                    alertDialog.show();
-
-                                    try {
-                                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                        Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                        r.play();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, 4500);
 
                         } else {
                             mediaPlayer.stop();
@@ -723,6 +726,46 @@ public class UserLocation2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ++locate_count;
+            //--- - - - - - - - - - - - - - -- - - -   -- -   - -- - - - -- - - -- -- - - - ---- - - - - - - -   -- -   -
+
+                LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+                boolean gps_enabled = false;
+                boolean network_enabled = false;
+
+                try {
+                    gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                } catch(Exception ex) {}
+
+                try {
+                    network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                } catch(Exception ex) {}
+
+                if(!gps_enabled && !network_enabled) {
+                    // notify user
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(UserLocation2.this);
+                    dialog.setTitle("ENABLE LOCATION");
+                    dialog.setMessage("Location services have not been turned on. Turn on now?");
+                    dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            // TODO Auto-generated method stub
+                            Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            context.startActivity(myIntent);
+                            //get gps
+                        }
+                    });
+                    dialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            // TODO Auto-generated method stub
+
+                        }
+                    });
+                    dialog.show();
+                }
+                //- - --    -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -   -
+
                 if (map != null) {
 
                     toggleGps(!map.isMyLocationEnabled());
@@ -741,7 +784,14 @@ public class UserLocation2 extends AppCompatActivity {
         },500);
 
 
-    }
+
+
+    } //END OF ONCREATE
+
+
+
+
+
 
     @Override
     public void onResume() {

@@ -123,7 +123,7 @@ public class ShakeService1 extends Service implements GoogleApiClient.Connection
         float accelationSquareRoot = (x * x + y * y + z * z)
                 / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
         long actualTime = System.currentTimeMillis();
-        if (accelationSquareRoot >= 65) //
+        if (accelationSquareRoot >= 40) //
         {
             if (actualTime - lastUpdate < 3000) {
                 return;

@@ -75,6 +75,7 @@ public class EmailActivity extends AppCompatActivity {
     public String existing_email;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,10 +90,10 @@ public class EmailActivity extends AppCompatActivity {
         AdRequest request = new AdRequest.Builder().build();
 
         mAdView.loadAd(request);
+
+
+
         //done with banner
-
-
-
 
 
 
@@ -391,6 +392,8 @@ public class EmailActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
 
 
 

@@ -34,7 +34,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".TrustedActivity"
-            android:label="Your Trusted Contacts"
+            android:label="Trusted Contacts"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -53,16 +53,18 @@
         <activity
             android:name=".UserLocation2"
             android:label="Your Location"
+
+
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".EmailActivity"
-            android:label="@string/title_activity_email"
+            android:label="Trusted Email"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".MessageTemplates"
-            android:label="@string/title_activity_notifications"
+            android:label="Message Templates"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
