@@ -24,14 +24,16 @@ Beacon is a location based personal safety app which connects you to the people 
 On Android versions after Android 5.0, Beacon requires the following permissions:
 ```
 
-   <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
 ```
-    
-
+## API References
+- [Mapbox maps API](https://docs.mapbox.com/android/maps/overview/)
+- [Google Places API](https://developers.google.com/places/android-sdk/intro)
+- [Google Maps API](https://developers.google.com/maps/documentation/android-sdk/intro)
 
 
 
